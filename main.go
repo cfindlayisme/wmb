@@ -14,12 +14,7 @@ import (
 type IncomingMessage struct {
 	Message    string
 	Password   string
-	ColourCode int8
-	// 0 default colour
-	// 1 green
-	// 2 red
-	// 3 blue
-	// 4 yellow
+	ColourCode int8 // https://modern.ircdocs.horse/formatting.html
 }
 
 func main() {
@@ -52,6 +47,24 @@ func main() {
 				// Strip newlines to prevent chaining of commands, ie, QUIT to the end
 				ircMessage = strings.ReplaceAll(ircMessage, "\n", "")
 				ircMessage = strings.ReplaceAll(ircMessage, "\r", "")
+
+				colourPrefix := ""
+				colourSufffix := "\x03"
+				// https://modern.ircdocs.horse/formatting.html
+				switch msg.ColourCode {
+				case 1:
+					colourPrefix = "\x0301"
+				case 2:
+					colourPrefix = "\x0302"
+				case 3:
+					colourPrefix = "\x0303"
+				case 4:
+					colourPrefix = "\x0304"
+				}
+
+				if colourPrefix != "" {
+					ircMessage = colourPrefix + ircMessage + colourSufffix
+				}
 
 				_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+ircMessage+"\r\n")
 
