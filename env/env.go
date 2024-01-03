@@ -7,9 +7,17 @@ func GetServer() string {
 }
 
 func GetChannel() string {
-	return os.Getenv("IRC_CHANNEL")
+	channel := os.Getenv("IRC_CHANNEL")
+	if channel == "" {
+		channel = "#wmb"
+	}
+	return channel
 }
 
 func GetNick() string {
-	return os.Getenv("IRC_NICK")
+	nick := os.Getenv("IRC_NICK")
+	if nick == "" {
+		nick = "wmb"
+	}
+	return nick
 }
