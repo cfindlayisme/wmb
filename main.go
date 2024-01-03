@@ -48,7 +48,12 @@ func main() {
 			if env.GetWebhookPassword() != msg.Password {
 				c.String(http.StatusUnauthorized, "Invalid password")
 			} else {
-				_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+msg.Message+"\r\n")
+				ircMessage := msg.Message
+				// Strip newlines to prevent chaining of commands, ie, QUIT to the end
+				ircMessage = strings.ReplaceAll(ircMessage, "\n", "")
+				ircMessage = strings.ReplaceAll(ircMessage, "\r", "")
+
+				_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+ircMessage+"\r\n")
 
 				if err != nil {
 					c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
