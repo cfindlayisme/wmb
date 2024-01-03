@@ -9,5 +9,6 @@ Work in progress - not ready for usage
 - PASSWORD (Not IRC password, but password for the webhook)
 
 # Send a message to IRC from CLI
-`curl -X POST -H "Content-Type: application/json" -d '{"message":"Hello, World! stuff", "
-password":"password"}' http://localhost:8080/webhook`
+```
+curl -X POST -H "Content-Type: application/json" -d '{"message":"Hello, World! stuff", "password":"password"}' http://localhost:8080/webhook
+```
