@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/cfindlayisme/wmb/env"
@@ -19,7 +20,7 @@ func main() {
 	conn, err := net.Dial("tcp", env.GetServer())
 	if err != nil {
 		fmt.Println("Failed to connect to IRC server:", err)
-		return
+		os.Exit(1)
 	}
 
 	fmt.Fprintf(conn, "NICK "+env.GetNick()+"\r\n")
