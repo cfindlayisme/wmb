@@ -21,3 +21,7 @@ func GetNick() string {
 	}
 	return nick
 }
+
+func GetWebhookPassword() string {
+	return os.Getenv("PASSWORD")
+}
