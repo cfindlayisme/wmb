@@ -27,12 +27,6 @@ func setConnection(conn net.Conn) {
 	ircConnection = conn
 }
 
-func returnPong(message string) {
-	pongMessage := strings.Replace(message, "PING", "PONG", 1)
-	fmt.Fprintf(ircConnection, pongMessage+"\r\n")
-	fmt.Println("PONG returned to server PING")
-}
-
 func Loop() {
 	for {
 		message, err := readMessage(ircConnection)
