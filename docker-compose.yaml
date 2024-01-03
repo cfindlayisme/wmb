@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  wmb:
+    image: gitea.findlayis.me/chuck/wmb:latest
+    environment: 
+        - IRC_SERVER=
+        - IRC_NICK=
+        - IRC_CHANNEL=
+        - PASSWORD=
+    ports:
+        - "8080:8080"
+    restart: always
