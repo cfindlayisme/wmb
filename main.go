@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/cfindlayisme/wmb/env"
+	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,9 +25,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Fprintf(conn, "NICK "+env.GetNick()+"\r\n")
-	fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\n")
-	fmt.Fprintf(conn, "JOIN "+env.GetChannel()+"\r\n")
+	ircclient.SetNick(conn, env.GetNick())
+	ircclient.SetUser(conn)
+	ircclient.JoinChannel(conn, env.GetChannel())
 
 	router := gin.Default()
 	listenAddress := "0.0.0.0:8080"
@@ -90,7 +91,7 @@ func main() {
 					ircMessage = colourPrefix + ircMessage + colourSufffix
 				}
 
-				_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+ircMessage+"\r\n")
+				err := ircclient.SendMessage(conn, env.GetChannel(), ircMessage)
 
 				if err != nil {
 					c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
