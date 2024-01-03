@@ -5,22 +5,28 @@ import (
 	"net"
 )
 
-func SetNick(conn net.Conn, nick string) error {
-	_, err := fmt.Fprintf(conn, "NICK "+nick+"\r\n")
+var ircConnection net.Conn
+
+func SetConnection(conn net.Conn) {
+	ircConnection = conn
+}
+
+func SetNick(nick string) error {
+	_, err := fmt.Fprintf(ircConnection, "NICK "+nick+"\r\n")
 	return err
 }
 
-func JoinChannel(conn net.Conn, channel string) error {
-	_, err := fmt.Fprintf(conn, "JOIN "+channel+"\r\n")
+func JoinChannel(channel string) error {
+	_, err := fmt.Fprintf(ircConnection, "JOIN "+channel+"\r\n")
 	return err
 }
 
-func SendMessage(conn net.Conn, target string, message string) error {
-	_, err := fmt.Fprintf(conn, "PRIVMSG "+target+" :"+message+"\r\n")
+func SendMessage(target string, message string) error {
+	_, err := fmt.Fprintf(ircConnection, "PRIVMSG "+target+" :"+message+"\r\n")
 	return err
 }
 
-func SetUser(conn net.Conn) error {
-	_, err := fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\n")
+func SetUser() error {
+	_, err := fmt.Fprintf(ircConnection, "USER wmb 0 * :Webhook message bot\r\n")
 	return err
 }

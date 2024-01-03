@@ -9,14 +9,9 @@ import (
 
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
+	"github.com/cfindlayisme/wmb/model"
 	"github.com/gin-gonic/gin"
 )
-
-type IncomingMessage struct {
-	Message    string
-	Password   string
-	ColourCode int8 // https://modern.ircdocs.horse/formatting.html
-}
 
 func main() {
 	conn, err := net.Dial("tcp", env.GetServer())
@@ -25,16 +20,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	ircclient.SetNick(conn, env.GetNick())
-	ircclient.SetUser(conn)
-	ircclient.JoinChannel(conn, env.GetChannel())
+	ircclient.SetConnection(conn)
+	ircclient.SetNick(env.GetNick())
+	ircclient.SetUser()
+	ircclient.JoinChannel(env.GetChannel())
 
 	router := gin.Default()
 	listenAddress := "0.0.0.0:8080"
 
 	go func() {
 		router.POST("/message", func(c *gin.Context) {
-			var msg IncomingMessage
+			var msg model.IncomingMessage
 
 			if err := c.BindJSON(&msg); err != nil {
 				c.String(http.StatusBadRequest, "Invalid JSON in request body")
@@ -91,7 +87,7 @@ func main() {
 					ircMessage = colourPrefix + ircMessage + colourSufffix
 				}
 
-				err := ircclient.SendMessage(conn, env.GetChannel(), ircMessage)
+				err := ircclient.SendMessage(env.GetChannel(), ircMessage)
 
 				if err != nil {
 					c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
