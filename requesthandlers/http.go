@@ -2,12 +2,19 @@ package requesthandlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
 	"github.com/gin-gonic/gin"
 )
+
+func validateMessage(msg model.IncomingMessage, c *gin.Context) {
+	if strings.Contains(msg.Message, "\n") || strings.Contains(msg.Message, "\r") {
+		c.String(http.StatusBadRequest, "Message cannot contain newline characters")
+	}
+}
 
 func PostMessage(c *gin.Context) {
 	var msg model.IncomingMessage
@@ -16,6 +23,8 @@ func PostMessage(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Invalid JSON in request body")
 		return
 	}
+
+	validateMessage(msg, c)
 
 	if env.GetWebhookPassword() != msg.Password {
 		c.String(http.StatusUnauthorized, "Invalid password")
