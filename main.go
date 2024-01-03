@@ -24,7 +24,7 @@ func main() {
 
 	fmt.Fprintf(conn, "NICK wmb\r\n")
 	fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\n")
-	fmt.Fprintf(conn, "JOIN #serverfail.party\r\n")
+	fmt.Fprintf(conn, "JOIN "+env.GetChannel()+"\r\n")
 
 	router := gin.Default()
 	listenAddress := "localhost:8080"
@@ -36,7 +36,7 @@ func main() {
 				Password: c.Query("password"),
 			}
 
-			_, err := fmt.Fprintf(conn, "PRIVMSG #serverfail.party :"+msg.Message+"\r\n")
+			_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+msg.Message+"\r\n")
 
 			if err != nil {
 				c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
