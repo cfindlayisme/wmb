@@ -28,7 +28,7 @@ func main() {
 	fmt.Fprintf(conn, "JOIN "+env.GetChannel()+"\r\n")
 
 	router := gin.Default()
-	listenAddress := "localhost:8080"
+	listenAddress := "0.0.0.0:8080"
 
 	go func() {
 		router.POST("/webhook", func(c *gin.Context) {
