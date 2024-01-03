@@ -12,8 +12,14 @@ import (
 )
 
 type IncomingMessage struct {
-	Message  string
-	Password string
+	Message    string
+	Password   string
+	ColourCode int8
+	// 0 default colour
+	// 1 green
+	// 2 red
+	// 3 blue
+	// 4 yellow
 }
 
 func main() {
