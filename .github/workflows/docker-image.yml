@@ -25,7 +25,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --severity-threshold=high
+        args: --severity-threshold=critical --fail-on=all
 
   unit-test:
     runs-on: ubuntu-latest
