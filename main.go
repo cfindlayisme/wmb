@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
@@ -101,28 +99,7 @@ func main() {
 		}
 	}()
 
-	for {
-		message, err := readMessage(ircclient.GetConnection())
-		if err != nil {
-			fmt.Println("Failed to read message:", err)
-			break
-		}
-
-		fmt.Println("Received message:", message)
-
-		if strings.HasPrefix(message, "PING") {
-			ircclient.ReturnPong(message)
-		}
-	}
+	ircclient.Loop()
 
 	ircclient.Disconnect()
-}
-
-func readMessage(conn net.Conn) (string, error) {
-	buffer := make([]byte, 512)
-	n, err := conn.Read(buffer)
-	if err != nil {
-		return "", err
-	}
-	return string(buffer[:n]), nil
 }
