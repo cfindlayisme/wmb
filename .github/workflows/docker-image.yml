@@ -83,3 +83,18 @@ jobs:
         export NICK=$(head /dev/urandom | tr -dc A-Za-z | head -c 9 ; echo '')
         bash -c 'exec 3<>/dev/tcp/${{ secrets.IRC_SERVER }}/6667; echo -e "USER github_actions 0 * :GitHub Actions\nNICK $NICK\nJOIN ${{ secrets.IRC_CHANNEL }}" >&3; sleep 2; echo -e "PRIVMSG ${{ secrets.IRC_CHANNEL }} :\x0304,01Build of ${{ secrets.DOCKER_REPO }}:latest failed with commit message: "$COMMIT_MSG"\x03\nQUIT" >&3; cat <&3'
       if: failure()
+
+  deploy:
+    needs: [build]
+
+    - name: Deploy image to production
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_SECRET }}
+        port: 22
+        script: |
+          cd /srv/wmb
+          docker compose pull
+          docker compose up -d
