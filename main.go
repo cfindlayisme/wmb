@@ -40,9 +40,6 @@ func main() {
 				c.String(http.StatusUnauthorized, "Invalid password")
 			} else {
 				ircMessage := msg.Message
-				// Strip newlines to prevent chaining of commands, ie, QUIT to the end
-				ircMessage = strings.ReplaceAll(ircMessage, "\n", "")
-				ircMessage = strings.ReplaceAll(ircMessage, "\r", "")
 
 				colourPrefix := ""
 				colourSufffix := "\x03"
