@@ -31,19 +31,18 @@ func main() {
 	listenAddress := "localhost:8080"
 
 	go func() {
-		router.GET("/webhook", func(c *gin.Context) {
-			msg := IncomingMessage{
-				Message:  c.Query("message"),
-				Password: c.Query("password"),
+		router.POST("/webhook", func(c *gin.Context) {
+			var msg IncomingMessage
+
+			if err := c.BindJSON(&msg); err != nil {
+				c.JSON(http.StatusBadRequest, "Invalid JSON in request body")
+				return
 			}
 
 			_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+msg.Message+"\r\n")
-
 			if err != nil {
 				c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
 			}
-
-			c.String(200, "OK") // Return 200 status code
 		})
 		router.Run(listenAddress)
 	}()
