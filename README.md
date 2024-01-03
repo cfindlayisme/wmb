@@ -4,3 +4,5 @@ Work in progress - not ready for usage
 
 # Envionment Variables
 - IRC_SERVER in server:port format
+- IRC_CHANNEL 
+- IRC_NICK
