@@ -74,7 +74,7 @@ jobs:
       run: |
         export COMMIT_MSG=$(git log -1 --pretty=%B)
         export MESSAGE="Build of ${{ secrets.DOCKER_REPO }}:latest completed successfully with commit message: $COMMIT_MSG"
-        curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": \"3\""}" https://convos.findlayis.me/wmb/message
+        curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": \"3\"}" https://convos.findlayis.me/wmb/message
       if: success()
 
     - name: Notify IRC Failure
