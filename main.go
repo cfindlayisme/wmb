@@ -35,7 +35,7 @@ func main() {
 			var msg IncomingMessage
 
 			if err := c.BindJSON(&msg); err != nil {
-				c.JSON(http.StatusBadRequest, "Invalid JSON in request body")
+				c.String(http.StatusBadRequest, "Invalid JSON in request body")
 				return
 			}
 
