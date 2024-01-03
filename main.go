@@ -22,7 +22,7 @@ func main() {
 		return
 	}
 
-	fmt.Fprintf(conn, "NICK wmb\r\n")
+	fmt.Fprintf(conn, "NICK "+env.GetNick()+"\r\n")
 	fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\n")
 	fmt.Fprintf(conn, "JOIN "+env.GetChannel()+"\r\n")
 

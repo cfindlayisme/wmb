@@ -9,3 +9,7 @@ func GetServer() string {
 func GetChannel() string {
 	return os.Getenv("IRC_CHANNEL")
 }
+
+func GetNick() string {
+	return os.Getenv("IRC_NICK")
+}
