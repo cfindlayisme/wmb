@@ -10,10 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func validateMessage(msg model.IncomingMessage, c *gin.Context) {
+func validateMessage(msg model.IncomingMessage, c *gin.Context) bool {
 	if strings.Contains(msg.Message, "\n") || strings.Contains(msg.Message, "\r") {
 		c.String(http.StatusBadRequest, "Message cannot contain newline characters")
+		return false
 	}
+	return true
 }
 
 func PostMessage(c *gin.Context) {
@@ -24,7 +26,9 @@ func PostMessage(c *gin.Context) {
 		return
 	}
 
-	validateMessage(msg, c)
+	if !validateMessage(msg, c) {
+		return
+	}
 
 	if env.GetWebhookPassword() != msg.Password {
 		c.String(http.StatusUnauthorized, "Invalid password")
