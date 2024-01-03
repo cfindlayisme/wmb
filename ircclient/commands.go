@@ -2,14 +2,7 @@ package ircclient
 
 import (
 	"fmt"
-	"net"
 )
-
-var ircConnection net.Conn
-
-func SetConnection(conn net.Conn) {
-	ircConnection = conn
-}
 
 func SetNick(nick string) error {
 	_, err := fmt.Fprintf(ircConnection, "NICK "+nick+"\r\n")

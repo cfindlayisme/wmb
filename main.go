@@ -14,13 +14,12 @@ import (
 )
 
 func main() {
-	conn, err := net.Dial("tcp", env.GetServer())
+	err := ircclient.Connect(env.GetServer())
 	if err != nil {
 		fmt.Println("Failed to connect to IRC server:", err)
 		os.Exit(1)
 	}
 
-	ircclient.SetConnection(conn)
 	ircclient.SetNick(env.GetNick())
 	ircclient.SetUser()
 	ircclient.JoinChannel(env.GetChannel())
@@ -106,7 +105,7 @@ func main() {
 	}()
 
 	for {
-		message, err := readMessage(conn)
+		message, err := readMessage(ircclient.GetConnection())
 		if err != nil {
 			fmt.Println("Failed to read message:", err)
 			break
@@ -115,13 +114,11 @@ func main() {
 		fmt.Println("Received message:", message)
 
 		if strings.HasPrefix(message, "PING") {
-			pongMessage := strings.Replace(message, "PING", "PONG", 1)
-			fmt.Fprintf(conn, pongMessage+"\r\n")
-			fmt.Println("Sent message:", pongMessage)
+			ircclient.ReturnPong(message)
 		}
 	}
 
-	conn.Close()
+	ircclient.Disconnect()
 }
 
 func readMessage(conn net.Conn) (string, error) {
