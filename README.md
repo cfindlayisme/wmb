@@ -36,7 +36,7 @@ location /wmb {
 
 In your desired config. Then you can POST to domain.tld/wmb/message to send out a webhook.
 
-## GitHub ACtions pipeline success/failure message
+## GitHub Actions pipeline success/failure message
 Set the secret WMB_PASSWORD in your GitHub repo, then add the following to your pipeline after the step you wish to send out success/failure messages:
 ```
 - name: Notify IRC Success
