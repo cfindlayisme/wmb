@@ -54,5 +54,10 @@ Set the secret WMB_PASSWORD in your GitHub repo, then add the following to your 
     if: failure()
 ```
 
+## I don't want to use docker
+Fine, just clone the repo and run `make`. A binary will be built in the root of the repo called `wmb` that will work just as good as the docker container, just set your envionment variables and run it.
+
+Note: You'll need to have go installed to build the binary.
+
 ## But why?
 I wanted to get notifications in IRC from my various systems, and particularly my GitHub action pipelines. This does that.
