@@ -24,7 +24,7 @@ Colourcode is optional, and is the colour of the message in IRC. See https://mod
 
 ## Send a message to IRC from CLI
 ```
-curl -X POST -H "Content-Type: application/json" -d '{"message":"Hello, World! stuff", "password":"password"}' http://localhost:8080/webhook
+curl -X POST -H "Content-Type: application/json" -d '{"message":"Hello, World! stuff", "password":"password"}' http://localhost:8080/message
 ```
 ## nginx reverse proxy
 ```
