@@ -100,7 +100,13 @@ func main() {
 			}
 
 		})
-		router.Run(listenAddress)
+
+		err := router.Run(listenAddress)
+
+		if err != nil {
+			fmt.Println("Failed to start webserver:", err)
+			os.Exit(1)
+		}
 	}()
 
 	for {
