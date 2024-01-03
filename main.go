@@ -19,6 +19,9 @@ func main() {
 
 	ircclient.SetNick(env.GetNick())
 	ircclient.SetUser()
+	if env.GetNickservPassword() != "" {
+		ircclient.SendMessage("NickServ", "IDENTIFY "+env.GetNickservPassword())
+	}
 	ircclient.JoinChannel(env.GetChannel())
 
 	router := gin.Default()

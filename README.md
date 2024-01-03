@@ -10,6 +10,7 @@ See `docker-compose.yml` for an example of how to launch the bot. Just have to c
 - IRC_CHANNEL 
 - IRC_NICK
 - PASSWORD (Not IRC password, but password for the webhook. Sort of like an API key you define)
+- NICKSERV_PASSWORD (Optional)
 
 ## JSON format
 POST to /message with the following JSON format:

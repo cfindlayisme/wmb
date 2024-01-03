@@ -25,3 +25,7 @@ func GetNick() string {
 func GetWebhookPassword() string {
 	return os.Getenv("PASSWORD")
 }
+
+func GetNickservPassword() string {
+	return os.Getenv("NICKSERV_PASSWORD")
+}
