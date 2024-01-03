@@ -31,7 +31,7 @@ func main() {
 	listenAddress := "0.0.0.0:8080"
 
 	go func() {
-		router.POST("/webhook", func(c *gin.Context) {
+		router.POST("/message", func(c *gin.Context) {
 			var msg IncomingMessage
 
 			if err := c.BindJSON(&msg); err != nil {
@@ -41,12 +41,15 @@ func main() {
 
 			if env.GetWebhookPassword() != msg.Password {
 				c.String(http.StatusUnauthorized, "Invalid password")
+			} else {
+				_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+msg.Message+"\r\n")
+
+				if err != nil {
+					c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
+				}
+				c.String(http.StatusOK, "Message sent")
 			}
 
-			_, err := fmt.Fprintf(conn, "PRIVMSG "+env.GetChannel()+" :"+msg.Message+"\r\n")
-			if err != nil {
-				c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
-			}
 		})
 		router.Run(listenAddress)
 	}()
