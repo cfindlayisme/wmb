@@ -60,5 +60,8 @@ Fine, just clone the repo and run `make`. A binary will be built in the root of 
 
 Note: You'll need to have go installed to build the binary.
 
+## Resource usage
+For those of you running this on tiny VMs, the resource usage is pretty low - barely any CPU usage, and about 12MB of RAM usage (which is pretty good considering it's running an IRC client and a web server.)
+
 ## But why?
 I wanted to get notifications in IRC from my various systems, and particularly my GitHub action pipelines. This does that.
