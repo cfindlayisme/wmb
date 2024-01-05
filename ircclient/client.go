@@ -40,6 +40,14 @@ func Loop() {
 		if strings.HasPrefix(message, "PING") {
 			returnPong(message)
 		}
+
+		// Split the message into words
+		words := strings.Split(message, " ")
+
+		// Check if the second word is PRIVMSG
+		if len(words) >= 2 && words[1] == "PRIVMSG" {
+			processPrivmsg(words)
+		}
 	}
 }
 
