@@ -35,14 +35,12 @@ func Loop() {
 			break
 		}
 
-		if strings.HasPrefix(message, "PING") {
-			returnPong(message)
-		}
-
 		message = strings.TrimSuffix(message, "\n")
 		words := strings.Split(message, " ")
 
-		if len(words) >= 2 && words[1] == "PRIVMSG" {
+		if strings.HasPrefix(message, "PING") {
+			returnPong(message)
+		} else if len(words) >= 2 && words[1] == "PRIVMSG" {
 			processPrivmsg(words)
 		} else {
 			fmt.Println("Raw unprocessed message:", message)
