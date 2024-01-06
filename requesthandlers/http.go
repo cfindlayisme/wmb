@@ -42,3 +42,25 @@ func PostMessage(c *gin.Context) {
 	c.String(http.StatusOK, "Message sent")
 
 }
+
+func QueryMessage(c *gin.Context) {
+	var msg model.IncomingMessage
+
+	if err := c.ShouldBindQuery(&msg); err != nil {
+
+		c.String(http.StatusBadRequest, "Invalid query parameters")
+		return
+	}
+
+	if !validateMessage(msg, c) {
+		return
+	}
+
+	err := ircclient.SendMessage(env.GetChannel(), ircclient.FormatMessage(msg))
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
+	}
+	c.String(http.StatusOK, "Message sent")
+
+}

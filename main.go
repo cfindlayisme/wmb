@@ -30,6 +30,7 @@ func main() {
 	// Web server needs to be launched as a goroutine so that it doesn't block
 	go func() {
 		router.POST("/message", requesthandlers.PostMessage)
+		router.GET("/message", requesthandlers.QueryMessage)
 
 		err := router.Run(listenAddress)
 
