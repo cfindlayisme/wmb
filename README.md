@@ -1,6 +1,4 @@
-Very simple bot to turn JSON webhooks into IRC messages.
-
-Work in progress, but functional enough to use.
+Very simple bot to send IRC messages from webhooks.
 
 ## Launching
 See `docker-compose.yml` for an example of how to launch the bot. Just have to change envionment variables and run `docker-compose up -d`
@@ -27,6 +25,12 @@ Colourcode is optional, and is the colour of the message in IRC. See https://mod
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"message":"Hello, World! stuff", "password":"password"}' http://localhost:8080/message
 ```
+Or, if you prefer to use just a URL:
+```
+curl http://localhost:8080/message?Message=Hello,%20World!&Password=password
+
+```
+Note using this second method, the Message and Password parameters are case sensitive.
 ## nginx reverse proxy
 ```
 location /wmb {
