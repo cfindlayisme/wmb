@@ -47,17 +47,19 @@ Set the secret WMB_PASSWORD in your GitHub repo, then add the following to your 
 - name: Notify IRC Success
     run: |
     export COMMIT_MSG=$(git log -1 --pretty=%B)
-    export MESSAGE="Build of project completed successfully with commit message: $COMMIT_MSG"
+    export MESSAGE="Build of project completed successfully with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
     curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 3}" https://domain/wmb/message
     if: success()
 
 - name: Notify IRC Failure
     run: |
     export COMMIT_MSG=$(git log -1 --pretty=%B)
-    export MESSAGE="Build of project failed with commit message: $COMMIT_MSG"
+    export MESSAGE="Build of project failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
     curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 4}" https://domain/wmb/message
     if: failure()
 ```
+
+Be sure to set the `WMB_PASSWORD` secret in your repository settings as a build secret.
 
 ## I don't want to use docker
 Fine, just clone the repo and run `make`. A binary will be built in the root of the repo called `wmb` that will work just as good as the docker container, just set your envionment variables and run it.
