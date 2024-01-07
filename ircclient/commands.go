@@ -15,6 +15,21 @@ func JoinChannel(channel string) error {
 	return err
 }
 
+func PartChannel(channel string) error {
+	_, err := fmt.Fprintf(ircConnection, "PART "+channel+"\r\n")
+	return err
+}
+
+func SetMode(channel string, mode string) error {
+	_, err := fmt.Fprintf(ircConnection, "MODE "+channel+" "+mode+"\r\n")
+	return err
+}
+
+func Quote(command string) error {
+	_, err := fmt.Fprintf(ircConnection, command+"\r\n")
+	return err
+}
+
 func SendMessage(target string, message string) error {
 	ircMessage := message
 	// Strip newlines to prevent chaining of commands, ie, QUIT to the end
