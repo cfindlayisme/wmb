@@ -35,6 +35,14 @@ func InviteUser(nick string, channel string) error {
 	return err
 }
 
+func KickUser(nick string, channel string, message string) error {
+	if message == "" {
+		message = "Kicked"
+	}
+	_, err := fmt.Fprintf(ircConnection, "KICK "+channel+" "+nick+" :"+message+"\r\n")
+	return err
+}
+
 func Quote(command string) error {
 	_, err := fmt.Fprintf(ircConnection, command+"\r\n")
 	return err
