@@ -11,6 +11,14 @@ func returnPong(message string) {
 	fmt.Println("PONG returned to server PING")
 }
 
+func cleanMessage(message string) string {
+	// Strip newlines to prevent chaining of commands, ie, QUIT to the end
+	message = strings.ReplaceAll(message, "\n", "")
+	message = strings.ReplaceAll(message, "\r", "")
+
+	return message
+}
+
 func processPrivmsg(words []string) {
 	// Extract the channel and the message from the PRIVMSG command
 	// The format of a PRIVMSG command is: :nick!user@host PRIVMSG #channel :message

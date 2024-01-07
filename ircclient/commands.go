@@ -2,7 +2,6 @@ package ircclient
 
 import (
 	"fmt"
-	"strings"
 )
 
 func SetNick(nick string) error {
@@ -31,12 +30,16 @@ func Quote(command string) error {
 }
 
 func SendMessage(target string, message string) error {
-	ircMessage := message
-	// Strip newlines to prevent chaining of commands, ie, QUIT to the end
-	ircMessage = strings.ReplaceAll(ircMessage, "\n", "")
-	ircMessage = strings.ReplaceAll(ircMessage, "\r", "")
+	ircMessage := cleanMessage(message)
 
 	_, err := fmt.Fprintf(ircConnection, "PRIVMSG "+target+" :"+ircMessage+"\r\n")
+	return err
+}
+
+func SendNotice(target string, message string) error {
+	ircMessage := cleanMessage(message)
+
+	_, err := fmt.Fprintf(ircConnection, "NOTICE "+target+" :"+ircMessage+"\r\n")
 	return err
 }
 
