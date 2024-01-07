@@ -24,6 +24,12 @@ func SetMode(channel string, mode string) error {
 	return err
 }
 
+func SetTopic(channel string, topic string) error {
+	cleanTopic := cleanMessage(topic)
+	_, err := fmt.Fprintf(ircConnection, "TOPIC "+channel+" "+cleanTopic+"\r\n")
+	return err
+}
+
 func Quote(command string) error {
 	_, err := fmt.Fprintf(ircConnection, command+"\r\n")
 	return err
