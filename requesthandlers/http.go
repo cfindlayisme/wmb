@@ -43,6 +43,30 @@ func PostMessage(c *gin.Context) {
 
 }
 
+func PostDirectedMessage(c *gin.Context) {
+	var dmsg model.DirectedIncomingMessage
+	var msg model.IncomingMessage
+
+	if err := c.BindJSON(&dmsg); err != nil {
+		c.String(http.StatusBadRequest, "Invalid JSON in request body")
+		return
+	}
+
+	msg = dmsg.IncomingMessage
+
+	if !validateMessage(msg, c) {
+		return
+	}
+
+	err := ircclient.SendMessage(dmsg.Target, ircclient.FormatMessage(msg))
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
+	}
+	c.String(http.StatusOK, "Message sent")
+
+}
+
 func QueryMessage(c *gin.Context) {
 	var msg model.IncomingMessage
 
