@@ -1,6 +1,9 @@
 package env
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 func GetServer() string {
 	return os.Getenv("IRC_SERVER")
@@ -12,6 +15,14 @@ func GetChannel() string {
 		channel = "#wmb"
 	}
 	return channel
+}
+
+func GetOtherChannels() []string {
+	channels := os.Getenv("OTHER_IRC_CHANNELS")
+	if channels == "" {
+		return nil
+	}
+	return strings.Split(channels, ",")
 }
 
 func GetNick() string {
