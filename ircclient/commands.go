@@ -30,6 +30,11 @@ func SetTopic(channel string, topic string) error {
 	return err
 }
 
+func InviteUser(nick string, channel string) error {
+	_, err := fmt.Fprintf(ircConnection, "INVITE "+nick+" "+channel+"\r\n")
+	return err
+}
+
 func Quote(command string) error {
 	_, err := fmt.Fprintf(ircConnection, command+"\r\n")
 	return err
