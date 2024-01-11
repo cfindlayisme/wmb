@@ -16,7 +16,7 @@ func SubscribePrivmsg(target string, url string) {
 	defer db.Close()
 
 	// Create the table if it doesn't exist
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (Target TEXT PRIMARY KEY, URL TEXT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (Target TEXT PRIMARY KEY, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
 	if err != nil {
 		log.Fatalf("Error creating table: %v", err)
 	}
@@ -28,7 +28,7 @@ func SubscribePrivmsg(target string, url string) {
 	}
 
 	// Prepare the statement
-	stmt, err := tx.Prepare("INSERT OR IGNORE INTO PrivmsgSubscriptions (Target, URL) VALUES (?, ?)")
+	stmt, err := tx.Prepare("INSERT OR IGNORE INTO PrivmsgSubscriptions (Target, URL, FailureCount) VALUES (?, ?, 0)")
 	if err != nil {
 		log.Fatalf("Error preparing statement: %v", err)
 	}
