@@ -10,12 +10,12 @@ These things will allow for easy "bolt-on" functionality without making the bot 
 See `docker-compose.yml` for an example of how to launch the bot. Just have to change envionment variables and run `docker-compose up -d`
 
 ## Envionment Variables
-- IRC_SERVER in server:port format
-- IRC_CHANNEL 
-- IRC_NICK
-- PASSWORD (Not IRC password, but password for the webhook. Sort of like an API key you define)
-- NICKSERV_PASSWORD (Optional)
-- OTHER_IRC_CHANNELS (Optional, comma separated list of channels to join on launch that are not the main channel)
+- `IRC_SERVER` in server:port format
+- `IRC_CHANNEL` 
+- `IRC_NICK`
+- `PASSWORD` (Not IRC password, but password for the webhook. Sort of like an API key you define)
+- `NICKSERV_PASSWORD` (Optional)
+- `OTHER_IRC_CHANNELS` (Optional, comma separated list of channels to join on launch that are not the main channel)
 
 ## JSON format
 POST to /message with the following JSON format:
