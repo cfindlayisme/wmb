@@ -1,5 +1,11 @@
 Very simple bot to send IRC messages from webhooks.
 
+In the future I plan to:
+- Allow for things to "subscribe" to webhooks, so they can recieve a webhook from wmb on something like a message in a channel for example
+- Create some more types of events that can be sent to IRC (ie, kick, ban, mode, topic, etc)
+
+These things will allow for easy "bolt-on" functionality without making the bot itself overly complicated.
+
 ## Launching
 See `docker-compose.yml` for an example of how to launch the bot. Just have to change envionment variables and run `docker-compose up -d`
 
