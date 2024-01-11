@@ -40,3 +40,11 @@ func GetWebhookPassword() string {
 func GetNickservPassword() string {
 	return os.Getenv("NICKSERV_PASSWORD")
 }
+
+func GetDatabaseFile() string {
+	dbfile := os.Getenv("DBFILE")
+	if dbfile == "" {
+		dbfile = "wmb.db"
+	}
+	return os.Getenv("DBFILE")
+}
