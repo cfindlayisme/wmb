@@ -48,3 +48,11 @@ func GetDatabaseFile() string {
 	}
 	return os.Getenv("DBFILE")
 }
+
+func GetListenPort() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	return port
+}

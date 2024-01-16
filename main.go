@@ -31,7 +31,7 @@ func main() {
 	}
 
 	router := gin.Default()
-	listenAddress := "0.0.0.0:8080"
+	listenAddress := "0.0.0.0:" + env.GetListenPort()
 
 	// Web server needs to be launched as a goroutine so that it doesn't block
 	go func() {
