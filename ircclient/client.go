@@ -1,7 +1,7 @@
 package ircclient
 
 import (
-	"fmt"
+	"log"
 	"net"
 	"strings"
 )
@@ -31,7 +31,7 @@ func Loop() {
 	for {
 		message, err := readMessage(ircConnection)
 		if err != nil {
-			fmt.Println("Failed to read message:", err)
+			log.Println("Failed to read message on TCP buffer:", err)
 			break
 		}
 
@@ -43,7 +43,7 @@ func Loop() {
 		} else if len(words) >= 2 && words[1] == "PRIVMSG" {
 			processPrivmsg(words)
 		} else {
-			fmt.Println("Raw unprocessed message:", message)
+			log.Println("Raw unprocessed message:", message)
 		}
 	}
 }
