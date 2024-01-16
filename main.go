@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
@@ -13,8 +12,7 @@ import (
 func main() {
 	err := ircclient.Connect(env.GetServer())
 	if err != nil {
-		fmt.Println("Failed to connect to IRC server:", err)
-		os.Exit(1)
+		log.Fatalf("Failed to connect to IRC server: %s", err)
 	}
 
 	ircclient.SetNick(env.GetNick())
@@ -42,8 +40,7 @@ func main() {
 		err := router.Run(listenAddress)
 
 		if err != nil {
-			fmt.Println("Failed to start webserver:", err)
-			os.Exit(1)
+			log.Fatalf("Failed to start webserver: %s", err)
 		}
 	}()
 
