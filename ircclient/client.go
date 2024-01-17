@@ -4,6 +4,8 @@ import (
 	"log"
 	"net"
 	"strings"
+
+	"github.com/cfindlayisme/wmb/env"
 )
 
 var ircConnection net.Conn
@@ -16,7 +18,24 @@ func Connect(server string) error {
 
 	setConnection(conn)
 
+	initialize()
+
 	return nil
+}
+
+func initialize() {
+	SetNick(env.GetNick())
+	SetUser()
+	if env.GetNickservPassword() != "" {
+		SendMessage("NickServ", "IDENTIFY "+env.GetNickservPassword())
+	}
+	// Join our primary channel
+	JoinChannel(env.GetChannel())
+
+	// Also join our non-primary channels
+	for _, channel := range env.GetOtherChannels() {
+		JoinChannel(channel)
+	}
 }
 
 func Disconnect() error {

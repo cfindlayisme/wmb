@@ -15,19 +15,6 @@ func main() {
 		log.Fatalf("Failed to connect to IRC server: %s", err)
 	}
 
-	ircclient.SetNick(env.GetNick())
-	ircclient.SetUser()
-	if env.GetNickservPassword() != "" {
-		ircclient.SendMessage("NickServ", "IDENTIFY "+env.GetNickservPassword())
-	}
-	// Join our primary channel
-	ircclient.JoinChannel(env.GetChannel())
-
-	// Also join our non-primary channels
-	for _, channel := range env.GetOtherChannels() {
-		ircclient.JoinChannel(channel)
-	}
-
 	router := gin.Default()
 	listenAddress := "0.0.0.0:" + env.GetListenPort()
 
