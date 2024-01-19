@@ -29,6 +29,11 @@ func initialize() {
 	if env.GetNickservPassword() != "" {
 		SendMessage("NickServ", "IDENTIFY "+env.GetNickservPassword())
 	}
+
+	if env.GetSelfMode() != "" {
+		SetMode(env.GetNick(), env.GetSelfMode())
+	}
+
 	// Join our primary channel
 	JoinChannel(env.GetChannel())
 

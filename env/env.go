@@ -56,3 +56,8 @@ func GetListenPort() string {
 	}
 	return port
 }
+
+func GetSelfMode() string {
+	mode := os.Getenv("SELF_MODE")
+	return mode
+}
