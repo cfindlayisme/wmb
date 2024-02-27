@@ -25,7 +25,7 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --severity-threshold=critical --fail-on=all
+        args: --severity-threshold=high --fail-on=all
 
   unit-test:
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         image: ${{ secrets.DOCKER_REPO }}:latest
-        args: --severity-threshold=critical --fail-on=all
+        args: --severity-threshold=high --fail-on=all
         
     - name: Push the Docker image
       run: docker push ${{ secrets.DOCKER_REPO }}:latest
