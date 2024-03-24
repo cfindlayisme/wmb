@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/cfindlayisme/wmb/env"
-	"github.com/go-playground/assert"
+	"github.com/go-playground/assert/v2"
 )
 
 func TestGetServer(t *testing.T) {
