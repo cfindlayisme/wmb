@@ -1,8 +1,6 @@
 name: Build & Push Production Docker Image
 
-on:
-  push:
-    branches: [ "main" ]
+on: push
 
 jobs:
 
@@ -38,13 +36,11 @@ jobs:
       run: go mod download
     - name: Unit Testing
       run: go test -v ./...
-      
 
   build:
     needs: [sonar, snyk, unit-test]
-
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx
@@ -58,7 +54,6 @@ jobs:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_TOKEN }}
-        
     - name: Run Snyk to check Docker image for vulnerabilities
       uses: snyk/actions/docker@master
       env:
@@ -66,10 +61,8 @@ jobs:
       with:
         image: ${{ secrets.DOCKER_REPO }}:latest
         args: --severity-threshold=high --fail-on=all
-        
     - name: Push the Docker image
       run: docker push ${{ secrets.DOCKER_REPO }}:latest
-
     - name: Notify IRC Success
       run: |
         export COMMIT_MSG=$(git log -1 --pretty=%B)
@@ -83,14 +76,12 @@ jobs:
         export MESSAGE="Build of ${{ secrets.DOCKER_REPO }}:latest failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 4}" https://convos.findlayis.me/wmb/message
       if: failure()
-
+      
   deploy:
     needs: [build]
-
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-
     steps:
-
     - name: Deploy image to production
       uses: appleboy/ssh-action@master
       with:
