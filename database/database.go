@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -13,18 +12,24 @@ type Database struct {
 
 var DB = &Database{}
 
-func (d *Database) Open(databaseFile string) {
+func (d *Database) Open(databaseFile string) error {
 	db, err := sql.Open("sqlite3", databaseFile)
 	if err != nil {
-		log.Fatalf("Error opening SQLite database: %v", err)
+		return err
 	}
 	d.db = db
+	return nil
 }
 
-func (d *Database) Close() {
+func (d *Database) Close() error {
 	if d.db != nil {
-		d.db.Close()
+		err := d.db.Close()
+		if err != nil {
+			return err
+		}
+		d.db = nil
 	}
+	return nil
 }
 
 func (d *Database) GetDB() *sql.DB {
