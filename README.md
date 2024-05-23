@@ -3,7 +3,9 @@ Very simple bot to send IRC messages from webhooks.
 In the future I plan to:
 - [x] Allow for things to "subscribe" to webhooks, so they can receive a webhook from wmb on something like a message in a channel for example
     - [ ] Finish up documentation for this feature (ie, schema etc)
+    - [ ] Finish writing tests for this feature
 - [ ] Create some more types of events that can be sent to IRC (ie, kick, ban, mode, topic, etc)
+- [ ] Get test code coverage up to 80% or higher
 
 These things will allow for easy "bolt-on" functionality without making the bot itself overly complicated.
 
