@@ -122,3 +122,30 @@ func PostSubscribePrivmsg(c *gin.Context) {
 		})
 	}
 }
+
+func PostUnsubscribePrivmsg(c *gin.Context) {
+	var subscription model.PrivmsgSubscription
+
+	if err := c.BindJSON(&subscription); err != nil {
+		c.String(http.StatusBadRequest, "Invalid query parameters")
+		return
+	}
+
+	if !validatePassword(subscription.Password, c) {
+		return
+	}
+
+	success := webhook.UnsubscribePrivmsg(subscription.Target, subscription.URL)
+
+	if success {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "Subscription removal successful",
+		})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "failure",
+			"message": "Subscription removal failed",
+		})
+	}
+}

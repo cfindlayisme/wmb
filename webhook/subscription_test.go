@@ -19,26 +19,27 @@ func TestSubscribePrivmsg(t *testing.T) {
 	database.DB.SetDB(db)
 
 	// Expectations
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions \\(Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY \\(Target, URL\\)\\)").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectBegin()
-
-	// Expect the SELECT query
 	mock.ExpectQuery("^SELECT 1 FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$").
 		WithArgs("target", "url").
 		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
-
-	mock.ExpectPrepare("INSERT OR IGNORE INTO PrivmsgSubscriptions")
-	mock.ExpectExec("INSERT OR IGNORE INTO PrivmsgSubscriptions").WithArgs("target", "url").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectPrepare("^INSERT OR IGNORE INTO PrivmsgSubscriptions \\(Target, URL, FailureCount\\) VALUES \\(\\?, \\?, 0\\)$")
+	mock.ExpectExec("^INSERT OR IGNORE INTO PrivmsgSubscriptions \\(Target, URL, FailureCount\\) VALUES \\(\\?, \\?, 0\\)$").
+		WithArgs("target", "url").
+		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	// Call the function
-	webhook.SubscribePrivmsg("target", "url")
+	result := webhook.SubscribePrivmsg("target", "url")
 
 	// Make sure all expectations were met
 	require.NoError(t, mock.ExpectationsWereMet(), "There were unfulfilled expectations")
+
+	// Check the result
+	require.True(t, result, "Expected true")
 }
 
-func TestSubscribePrivmsgExistsAndDoesnt(t *testing.T) {
+func TestSubscribePrivmsgExists(t *testing.T) {
 	// Create a mock database
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err, "An error was not expected when opening a stub database connection")
@@ -47,14 +48,12 @@ func TestSubscribePrivmsgExistsAndDoesnt(t *testing.T) {
 	// Set the mock database in the DB object
 	database.DB.SetDB(db)
 
-	// Expectations for the first call
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions \\(Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY \\(Target, URL\\)\\)").WillReturnResult(sqlmock.NewResult(1, 1))
+	// Expectations
 	mock.ExpectBegin()
-
-	// Expect the SELECT query
 	mock.ExpectQuery("^SELECT 1 FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$").
 		WithArgs("target", "url").
 		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+	mock.ExpectRollback()
 
 	// Call the function
 	result := webhook.SubscribePrivmsg("target", "url")
@@ -64,26 +63,60 @@ func TestSubscribePrivmsgExistsAndDoesnt(t *testing.T) {
 
 	// Check the result
 	require.False(t, result, "Expected false")
+}
 
-	// Expectations for the second call
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions \\(Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY \\(Target, URL\\)\\)").WillReturnResult(sqlmock.NewResult(1, 1))
+func TestUnsubscribePrivmsg(t *testing.T) {
+	// Create a mock database
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err, "An error was not expected when opening a stub database connection")
+	defer db.Close()
+
+	// Set the mock database in the DB object
+	database.DB.SetDB(db)
+
+	// Expectations
 	mock.ExpectBegin()
-
-	// Expect the SELECT query
 	mock.ExpectQuery("^SELECT 1 FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$").
 		WithArgs("target", "url").
-		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
-
-	mock.ExpectPrepare("INSERT OR IGNORE INTO PrivmsgSubscriptions")
-	mock.ExpectExec("INSERT OR IGNORE INTO PrivmsgSubscriptions").WithArgs("target", "url").WillReturnResult(sqlmock.NewResult(1, 1))
+		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+	mock.ExpectPrepare("^DELETE FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$")
+	mock.ExpectExec("^DELETE FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$").
+		WithArgs("target", "url").
+		WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	// Call the function
-	result = webhook.SubscribePrivmsg("target", "url")
+	result := webhook.UnsubscribePrivmsg("target", "url")
 
 	// Make sure all expectations were met
 	require.NoError(t, mock.ExpectationsWereMet(), "There were unfulfilled expectations")
 
 	// Check the result
 	require.True(t, result, "Expected true")
+}
+
+func TestUnsubscribePrivmsgNotExists(t *testing.T) {
+	// Create a mock database
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err, "An error was not expected when opening a stub database connection")
+	defer db.Close()
+
+	// Set the mock database in the DB object
+	database.DB.SetDB(db)
+
+	// Expectations
+	mock.ExpectBegin()
+	mock.ExpectQuery("^SELECT 1 FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$").
+		WithArgs("target", "url").
+		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
+	mock.ExpectRollback()
+
+	// Call the function
+	result := webhook.UnsubscribePrivmsg("target", "url")
+
+	// Make sure all expectations were met
+	require.NoError(t, mock.ExpectationsWereMet(), "There were unfulfilled expectations")
+
+	// Check the result
+	require.False(t, result, "Expected false")
 }
