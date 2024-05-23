@@ -52,6 +52,8 @@ func processPrivmsg(words []string) {
 
 	channel := words[2]
 	msg := strings.Join(words[3:], " ") // The message can contain spaces, so join all remaining words
+	msg = strings.TrimPrefix(msg, ":")  // Remove leading :
+	msg = strings.TrimSuffix(msg, "\r") // Remove trailing \r
 
 	log.Printf("Received PRIVMSG from %s!%s@%s to %s: %s\n", nick, user, host, channel, msg)
 
