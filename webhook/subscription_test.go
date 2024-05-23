@@ -22,6 +22,12 @@ func TestSubscribePrivmsg(t *testing.T) {
 	// Expectations
 	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectBegin()
+
+	// Expect the SELECT query
+	mock.ExpectQuery("^SELECT 1 FROM PrivmsgSubscriptions WHERE Target = \\? AND URL = \\?$").
+		WithArgs("target", "url").
+		WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
+
 	mock.ExpectPrepare("INSERT OR IGNORE INTO PrivmsgSubscriptions")
 	mock.ExpectExec("INSERT OR IGNORE INTO PrivmsgSubscriptions").WithArgs("target", "url").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
