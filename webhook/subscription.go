@@ -12,7 +12,7 @@ func SubscribePrivmsg(target string, url string) bool {
 	db := database.DB.GetDB()
 
 	// Create the table if it doesn't exist
-	_, err := db.Exec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (Target TEXT PRIMARY KEY, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (Target, URL))")
 	if err != nil {
 		log.Printf("Error creating table: %v", err)
 		return false

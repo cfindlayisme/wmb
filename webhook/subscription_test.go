@@ -19,7 +19,7 @@ func TestSubscribePrivmsg(t *testing.T) {
 	database.DB.SetDB(db)
 
 	// Expectations
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions \\(Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY \\(Target, URL\\)\\)").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectBegin()
 
 	// Expect the SELECT query
@@ -48,7 +48,7 @@ func TestSubscribePrivmsgExistsAndDoesnt(t *testing.T) {
 	database.DB.SetDB(db)
 
 	// Expectations for the first call
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions \\(Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY \\(Target, URL\\)\\)").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectBegin()
 
 	// Expect the SELECT query
@@ -66,7 +66,7 @@ func TestSubscribePrivmsgExistsAndDoesnt(t *testing.T) {
 	require.False(t, result, "Expected false")
 
 	// Expectations for the second call
-	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions \\(Target TEXT, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY \\(Target, URL\\)\\)").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectBegin()
 
 	// Expect the SELECT query
