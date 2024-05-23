@@ -1,0 +1,19 @@
+meta {
+  name: POST Privmsg Subscription Removal
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/unsubscribe
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "Target": "Test",
+    "URL": "http://localhost/404",
+    "Password": "{{WMB_PASSWORD}}"
+  }
+}

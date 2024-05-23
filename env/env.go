@@ -46,7 +46,7 @@ func GetDatabaseFile() string {
 	if dbfile == "" {
 		dbfile = "wmb.db"
 	}
-	return os.Getenv("DBFILE")
+	return dbfile
 }
 
 func GetListenPort() string {

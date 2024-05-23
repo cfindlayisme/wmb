@@ -8,10 +8,46 @@ on:
 
 jobs:
 
-  sonar:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.21.3'
+    - name: Install dependencies for go
+      run: go mod download
+    - name: Unit Testing
+      run: go test -v ./...
+    - name: Generate coverage report
+      run: go test -coverprofile=coverage.out ./...
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: coverage.out
+    - name: Notify IRC Success
+      run: |
+        export COMMIT_MSG=$(git log -1 --pretty=%B)
+        export MESSAGE="Unit tests for https://github.com/${{ github.repository }} completed successfully with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 3}" https://convos.findlayis.me/wmb/message
+      if: success()
+    - name: Notify IRC Failure
+      run: |
+        export COMMIT_MSG=$(git log -1 --pretty=%B)
+        export MESSAGE="Unit tests for https://github.com/${{ github.repository }} failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 4}" https://convos.findlayis.me/wmb/message
+      if: failure()
+
+  sonar:
+    needs: [unit-test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download coverage report
+      uses: actions/download-artifact@v2
+      with:
+        name: coverage-report
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
@@ -28,18 +64,6 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         args: --severity-threshold=high --fail-on=all
-
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-go@v5
-      with:
-        go-version: '1.21.3'
-    - name: Install dependencies for go
-      run: go mod download
-    - name: Unit Testing
-      run: go test -v ./...
 
   build:
       needs: [sonar, snyk, unit-test]

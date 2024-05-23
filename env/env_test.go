@@ -48,3 +48,19 @@ func TestGetNick(t *testing.T) {
 
 	assert.Equal(t, result, defaultResult)
 }
+
+func TestGetDatabaseFile(t *testing.T) {
+	// Test default value
+	os.Unsetenv("DBFILE")
+	dbfile := env.GetDatabaseFile()
+	if dbfile != "wmb.db" {
+		t.Fatalf("Expected default dbfile to be 'wmb.db', got '%s'", dbfile)
+	}
+
+	// Test environment variable
+	os.Setenv("DBFILE", "test.db")
+	dbfile = env.GetDatabaseFile()
+	if dbfile != "test.db" {
+		t.Fatalf("Expected dbfile to be 'test.db', got '%s'", dbfile)
+	}
+}

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/cfindlayisme/wmb/database"
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/requesthandlers"
@@ -10,6 +11,9 @@ import (
 )
 
 func main() {
+	database.DB.Open(env.GetDatabaseFile())
+	defer database.DB.Close()
+
 	err := ircclient.Connect(env.GetServer())
 	if err != nil {
 		log.Fatalf("Failed to connect to IRC server: %s", err)
@@ -23,6 +27,8 @@ func main() {
 		router.POST("/message", requesthandlers.PostMessage)
 		router.GET("/message", requesthandlers.QueryMessage)
 		router.POST("/directedMessage", requesthandlers.PostDirectedMessage)
+		router.POST("/subscribe", requesthandlers.PostSubscribePrivmsg)
+		router.POST("/unsubscribe", requesthandlers.PostUnsubscribePrivmsg)
 
 		err := router.Run(listenAddress)
 

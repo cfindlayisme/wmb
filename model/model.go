@@ -10,3 +10,14 @@ type DirectedIncomingMessage struct {
 	Target          string
 	IncomingMessage IncomingMessage
 }
+
+type DirectedOutgoingMessage struct {
+	Target  string
+	Message string
+}
+
+type PrivmsgSubscription struct {
+	Target   string
+	URL      string
+	Password string
+}

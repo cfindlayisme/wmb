@@ -7,6 +7,7 @@ import (
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
+	"github.com/cfindlayisme/wmb/webhook"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,11 +16,18 @@ func validateMessage(msg model.IncomingMessage, c *gin.Context) bool {
 		c.String(http.StatusBadRequest, "Message cannot contain newline characters")
 		return false
 	}
-	if env.GetWebhookPassword() != msg.Password {
-		c.String(http.StatusUnauthorized, "Invalid password")
-		return false
-	}
+	validatePassword(msg.Password, c)
+
 	return true
+}
+
+func validatePassword(password string, c *gin.Context) bool {
+	if env.GetWebhookPassword() == password {
+		return true
+	}
+	c.String(http.StatusUnauthorized, "Invalid password")
+
+	return false
 }
 
 func PostMessage(c *gin.Context) {
@@ -71,7 +79,6 @@ func QueryMessage(c *gin.Context) {
 	var msg model.IncomingMessage
 
 	if err := c.ShouldBindQuery(&msg); err != nil {
-
 		c.String(http.StatusBadRequest, "Invalid query parameters")
 		return
 	}
@@ -87,4 +94,58 @@ func QueryMessage(c *gin.Context) {
 	}
 	c.String(http.StatusOK, "Message sent")
 
+}
+
+func PostSubscribePrivmsg(c *gin.Context) {
+	var subscription model.PrivmsgSubscription
+
+	if err := c.BindJSON(&subscription); err != nil {
+		c.String(http.StatusBadRequest, "Invalid query parameters")
+		return
+	}
+
+	if !validatePassword(subscription.Password, c) {
+		return
+	}
+
+	success := webhook.SubscribePrivmsg(subscription.Target, subscription.URL)
+
+	if success {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "Subscription successful",
+		})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "failure",
+			"message": "Subscription failed",
+		})
+	}
+}
+
+func PostUnsubscribePrivmsg(c *gin.Context) {
+	var subscription model.PrivmsgSubscription
+
+	if err := c.BindJSON(&subscription); err != nil {
+		c.String(http.StatusBadRequest, "Invalid query parameters")
+		return
+	}
+
+	if !validatePassword(subscription.Password, c) {
+		return
+	}
+
+	success := webhook.UnsubscribePrivmsg(subscription.Target, subscription.URL)
+
+	if success {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "Subscription removal successful",
+		})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "failure",
+			"message": "Subscription removal failed",
+		})
+	}
 }
