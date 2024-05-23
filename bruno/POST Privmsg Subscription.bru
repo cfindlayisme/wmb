@@ -1,0 +1,19 @@
+meta {
+  name: POST Privmsg Subscription
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/subscription
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "Target": "Test",
+    "URL": "http://localhost/404",
+    "Password": "{{WMB_PASSWORD}}"
+  }
+}

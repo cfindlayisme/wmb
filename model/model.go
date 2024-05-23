@@ -12,6 +12,12 @@ type DirectedIncomingMessage struct {
 }
 
 type DirectedOutgoingMessage struct {
-	Target  string `json:"target"`
-	Message string `json:"message"`
+	Target  string
+	Message string
+}
+
+type PrivmsgSubscription struct {
+	Target   string
+	URL      string
+	Password string
 }
