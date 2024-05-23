@@ -7,7 +7,6 @@ import (
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/requesthandlers"
-	"github.com/cfindlayisme/wmb/webhook"
 	"github.com/gin-gonic/gin"
 )
 
