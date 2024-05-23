@@ -10,6 +10,9 @@ import (
 )
 
 func main() {
+	database.DB.Open(env.GetDatabaseFile())
+	defer database.DB.Close()
+
 	err := ircclient.Connect(env.GetServer())
 	if err != nil {
 		log.Fatalf("Failed to connect to IRC server: %s", err)

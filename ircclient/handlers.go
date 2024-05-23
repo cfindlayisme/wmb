@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/cfindlayisme/wmb/webhook"
 )
 
 func returnPong(message string) {
@@ -52,4 +54,6 @@ func processPrivmsg(words []string) {
 	msg := strings.Join(words[3:], " ") // The message can contain spaces, so join all remaining words
 
 	log.Printf("Received PRIVMSG from %s!%s@%s to %s: %s\n", nick, user, host, channel, msg)
+
+	webhook.SendPrivmsgWebhook(channel, msg)
 }

@@ -1,22 +1,17 @@
 package webhook
 
 import (
-	"database/sql"
 	"log"
 
-	"github.com/cfindlayisme/wmb/env"
+	"github.com/cfindlayisme/wmb/database"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func SubscribePrivmsg(target string, url string) {
-	// Open the SQLite database
-	db, err := sql.Open("sqlite3", env.GetDatabaseFile())
-	if err != nil {
-		log.Fatalf("Error opening SQLite database: %v", err)
-	}
-	defer db.Close()
+	db := database.DB.GetDB()
 
 	// Create the table if it doesn't exist
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (Target TEXT PRIMARY KEY, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (Target TEXT PRIMARY KEY, URL TEXT, FailureCount INTEGER DEFAULT 0, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)")
 	if err != nil {
 		log.Fatalf("Error creating table: %v", err)
 	}
