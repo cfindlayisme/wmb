@@ -21,6 +21,8 @@ See `docker-compose.yml` for an example of how to launch the bot. Just have to c
 - `OTHER_IRC_CHANNELS` (Optional, comma separated list of channels to join on launch that are not the main channel)
 - `PORT` (Optional, what port to have the webserver listen on, defaults to 8080)
 - `SELF_MODE` (Optional, what mode to set on self once joined to IRC server. Defaults nothing, but should be +B on some servers)
+- `DBFILE` (Optional, what file to use for the database, defaults to `wmb.db` - be sure to map properly if inside docker)
+
 
 ## JSON format
 POST to /message with the following JSON format:
