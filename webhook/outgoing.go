@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/cfindlayisme/wmb/database"
+	"github.com/cfindlayisme/wmb/model"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -31,7 +32,14 @@ func SendPrivmsgWebhook(target string, message string) {
 			log.Fatalf("Error scanning the row: %v", err)
 		}
 
-		log.Printf("Sending webhook about message in %s to %s\n", target, url)
+		msg := model.DirectedOutgoingMessage{
+			Target:  target,
+			Message: message,
+		}
+
+		log.Println("Sending message to", url)
+		log.Println(msg)
+
 	}
 
 	// Check for errors from iterating over rows.
