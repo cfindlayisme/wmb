@@ -8,10 +8,34 @@ on:
 
 jobs:
 
-  sonar:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '1.21.3'
+    - name: Install dependencies for go
+      run: go mod download
+    - name: Unit Testing
+      run: go test -v ./...
+    - name: Generate coverage report
+      run: go test -coverprofile=coverage.out ./...
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: coverage.out
+
+  sonar:
+    needs: [unit-test]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download coverage report
+      uses: actions/download-artifact@v2
+      with:
+        name: coverage-report
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
@@ -28,18 +52,6 @@ jobs:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
         args: --severity-threshold=high --fail-on=all
-
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-go@v5
-      with:
-        go-version: '1.21.3'
-    - name: Install dependencies for go
-      run: go mod download
-    - name: Unit Testing
-      run: go test -v ./...
 
   build:
       needs: [sonar, snyk, unit-test]
