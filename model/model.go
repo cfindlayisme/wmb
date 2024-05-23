@@ -10,3 +10,8 @@ type DirectedIncomingMessage struct {
 	Target          string
 	IncomingMessage IncomingMessage
 }
+
+type DirectedOutgoingMessage struct {
+	Target  string `json:"target"`
+	Message string `json:"message"`
+}
