@@ -27,8 +27,8 @@ func main() {
 		router.POST("/message", requesthandlers.PostMessage)
 		router.GET("/message", requesthandlers.QueryMessage)
 		router.POST("/directedMessage", requesthandlers.PostDirectedMessage)
-		router.POST("/subscribe", requesthandlers.PostSubscribePrivmsg)
-		router.POST("/unsubscribe", requesthandlers.PostUnsubscribePrivmsg)
+		router.POST("/subscribe/message", requesthandlers.PostSubscribePrivmsg)
+		router.POST("/unsubscribe/message", requesthandlers.PostUnsubscribePrivmsg)
 
 		err := router.Run(listenAddress)
 
