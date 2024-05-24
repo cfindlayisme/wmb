@@ -63,7 +63,7 @@ func Loop() {
 		words := strings.Split(message, " ")
 
 		if strings.HasPrefix(message, "PING") {
-			returnPong(message)
+			ReturnPong(ircConnection, message)
 		} else if len(words) >= 2 && words[1] == "PRIVMSG" {
 			processPrivmsg(words)
 		} else {

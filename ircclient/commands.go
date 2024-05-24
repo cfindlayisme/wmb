@@ -25,7 +25,7 @@ func SetMode(channel string, mode string) error {
 }
 
 func SetTopic(channel string, topic string) error {
-	cleanTopic := cleanMessage(topic)
+	cleanTopic := CleanMessage(topic)
 	_, err := fmt.Fprintf(ircConnection, "TOPIC "+channel+" "+cleanTopic+"\r\n")
 	return err
 }
@@ -49,14 +49,14 @@ func Quote(command string) error {
 }
 
 func SendMessage(target string, message string) error {
-	ircMessage := cleanMessage(message)
+	ircMessage := CleanMessage(message)
 
 	_, err := fmt.Fprintf(ircConnection, "PRIVMSG "+target+" :"+ircMessage+"\r\n")
 	return err
 }
 
 func SendNotice(target string, message string) error {
-	ircMessage := cleanMessage(message)
+	ircMessage := CleanMessage(message)
 
 	_, err := fmt.Fprintf(ircConnection, "NOTICE "+target+" :"+ircMessage+"\r\n")
 	return err

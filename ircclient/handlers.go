@@ -3,19 +3,20 @@ package ircclient
 import (
 	"fmt"
 	"log"
+	"net"
 	"strings"
 
 	"github.com/cfindlayisme/wmb/model"
 	"github.com/cfindlayisme/wmb/webhook"
 )
 
-func returnPong(message string) {
+func ReturnPong(connection net.Conn, message string) {
 	pongMessage := strings.Replace(message, "PING", "PONG", 1)
-	fmt.Fprintf(ircConnection, pongMessage+"\r\n")
+	fmt.Fprintf(connection, pongMessage+"\r\n")
 	log.Println("PONG returned to server PING")
 }
 
-func cleanMessage(message string) string {
+func CleanMessage(message string) string {
 	// Strip newlines to prevent chaining of commands, ie, QUIT to the end
 	message = strings.ReplaceAll(message, "\n", "")
 	message = strings.ReplaceAll(message, "\r", "")
