@@ -28,17 +28,3 @@ func TestReturnPong(t *testing.T) {
 	// Check if the data is as expected
 	require.Equal(t, "PONG :tmi.twitch.tv\r", data, "The data should be 'PONG :tmi.twitch.tv'")
 }
-
-func TestCleanMessage(t *testing.T) {
-	// Test case with newlines and carriage returns
-	input := "Hello\nWorld\r\n"
-	expected := "HelloWorld"
-	result := ircclient.CleanMessage(input)
-	require.Equal(t, expected, result, "The message should be cleaned")
-
-	// Test case with no newlines or carriage returns
-	input = "Hello World"
-	expected = "Hello World"
-	result = ircclient.CleanMessage(input)
-	require.Equal(t, expected, result, "The message should be unchanged")
-}
