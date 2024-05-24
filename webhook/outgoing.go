@@ -54,9 +54,10 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 	// Send the webhooks
 	for i, url := range urls {
 		msg := model.DirectedOutgoingMessage{
-			Target:  target,
-			Message: message,
-			IRCUser: ircuser,
+			Target:    target,
+			Message:   message,
+			IRCUser:   ircuser,
+			Timestamp: time.Now(),
 		}
 
 		err := sendPrivmsgWebhookToUrl(url, msg)

@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type IncomingMessage struct {
 	Message    string
 	Password   string
@@ -12,9 +14,10 @@ type DirectedIncomingMessage struct {
 }
 
 type DirectedOutgoingMessage struct {
-	Target  string
-	Message string
-	IRCUser IrcUser
+	Target    string
+	Message   string
+	IRCUser   IrcUser
+	Timestamp time.Time
 }
 
 type PrivmsgSubscription struct {
