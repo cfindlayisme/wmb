@@ -8,7 +8,7 @@ import (
 	"github.com/cfindlayisme/wmb/env"
 )
 
-var ircConnection net.Conn
+var IrcConnection net.Conn
 
 func Connect(server string) error {
 	conn, err := net.Dial("tcp", server)
@@ -24,36 +24,36 @@ func Connect(server string) error {
 }
 
 func initialize() {
-	SetNick(env.GetNick())
-	SetUser()
+	SetNick(IrcConnection, env.GetNick())
+	SetUser(IrcConnection)
 	if env.GetNickservPassword() != "" {
-		SendMessage("NickServ", "IDENTIFY "+env.GetNickservPassword())
+		SendMessage(IrcConnection, "NickServ", "IDENTIFY "+env.GetNickservPassword())
 	}
 
 	if env.GetSelfMode() != "" {
-		SetMode(env.GetNick(), env.GetSelfMode())
+		SetMode(IrcConnection, env.GetNick(), env.GetSelfMode())
 	}
 
 	// Join our primary channel
-	JoinChannel(env.GetChannel())
+	JoinChannel(IrcConnection, env.GetChannel())
 
 	// Also join our non-primary channels
 	for _, channel := range env.GetOtherChannels() {
-		JoinChannel(channel)
+		JoinChannel(IrcConnection, channel)
 	}
 }
 
 func Disconnect() error {
-	return ircConnection.Close()
+	return IrcConnection.Close()
 }
 
 func setConnection(conn net.Conn) {
-	ircConnection = conn
+	IrcConnection = conn
 }
 
 func Loop() {
 	for {
-		message, err := readMessage(ircConnection)
+		message, err := readMessage(IrcConnection)
 		if err != nil {
 			log.Println("Failed to read message on TCP buffer:", err)
 			break
@@ -63,7 +63,7 @@ func Loop() {
 		words := strings.Split(message, " ")
 
 		if strings.HasPrefix(message, "PING") {
-			ReturnPong(ircConnection, message)
+			ReturnPong(IrcConnection, message)
 		} else if len(words) >= 2 && words[1] == "PRIVMSG" {
 			processPrivmsg(words)
 		} else {

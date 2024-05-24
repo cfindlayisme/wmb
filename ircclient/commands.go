@@ -2,67 +2,68 @@ package ircclient
 
 import (
 	"fmt"
+	"net"
 )
 
-func SetNick(nick string) error {
-	_, err := fmt.Fprintf(ircConnection, "NICK "+nick+"\r\n")
+func SetNick(conn net.Conn, nick string) error {
+	_, err := fmt.Fprintf(conn, "NICK "+nick+"\r\n")
 	return err
 }
 
-func JoinChannel(channel string) error {
-	_, err := fmt.Fprintf(ircConnection, "JOIN "+channel+"\r\n")
+func JoinChannel(conn net.Conn, channel string) error {
+	_, err := fmt.Fprintf(conn, "JOIN "+channel+"\r\n")
 	return err
 }
 
-func PartChannel(channel string) error {
-	_, err := fmt.Fprintf(ircConnection, "PART "+channel+"\r\n")
+func PartChannel(conn net.Conn, channel string) error {
+	_, err := fmt.Fprintf(conn, "PART "+channel+"\r\n")
 	return err
 }
 
-func SetMode(channel string, mode string) error {
-	_, err := fmt.Fprintf(ircConnection, "MODE "+channel+" "+mode+"\r\n")
+func SetMode(conn net.Conn, channel string, mode string) error {
+	_, err := fmt.Fprintf(conn, "MODE "+channel+" "+mode+"\r\n")
 	return err
 }
 
-func SetTopic(channel string, topic string) error {
+func SetTopic(conn net.Conn, channel string, topic string) error {
 	cleanTopic := CleanMessage(topic)
-	_, err := fmt.Fprintf(ircConnection, "TOPIC "+channel+" "+cleanTopic+"\r\n")
+	_, err := fmt.Fprintf(conn, "TOPIC "+channel+" "+cleanTopic+"\r\n")
 	return err
 }
 
-func InviteUser(nick string, channel string) error {
-	_, err := fmt.Fprintf(ircConnection, "INVITE "+nick+" "+channel+"\r\n")
+func InviteUser(conn net.Conn, nick string, channel string) error {
+	_, err := fmt.Fprintf(conn, "INVITE "+nick+" "+channel+"\r\n")
 	return err
 }
 
-func KickUser(nick string, channel string, message string) error {
+func KickUser(conn net.Conn, nick string, channel string, message string) error {
 	if message == "" {
 		message = "Kicked"
 	}
-	_, err := fmt.Fprintf(ircConnection, "KICK "+channel+" "+nick+" :"+message+"\r\n")
+	_, err := fmt.Fprintf(conn, "KICK "+channel+" "+nick+" :"+message+"\r\n")
 	return err
 }
 
-func Quote(command string) error {
-	_, err := fmt.Fprintf(ircConnection, command+"\r\n")
+func Quote(conn net.Conn, command string) error {
+	_, err := fmt.Fprintf(conn, command+"\r\n")
 	return err
 }
 
-func SendMessage(target string, message string) error {
+func SendMessage(conn net.Conn, target string, message string) error {
 	ircMessage := CleanMessage(message)
 
-	_, err := fmt.Fprintf(ircConnection, "PRIVMSG "+target+" :"+ircMessage+"\r\n")
+	_, err := fmt.Fprintf(conn, "PRIVMSG "+target+" :"+ircMessage+"\r\n")
 	return err
 }
 
-func SendNotice(target string, message string) error {
+func SendNotice(conn net.Conn, target string, message string) error {
 	ircMessage := CleanMessage(message)
 
-	_, err := fmt.Fprintf(ircConnection, "NOTICE "+target+" :"+ircMessage+"\r\n")
+	_, err := fmt.Fprintf(conn, "NOTICE "+target+" :"+ircMessage+"\r\n")
 	return err
 }
 
-func SetUser() error {
-	_, err := fmt.Fprintf(ircConnection, "USER wmb 0 * :Webhook message bot\r\n")
+func SetUser(conn net.Conn) error {
+	_, err := fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\r\n")
 	return err
 }

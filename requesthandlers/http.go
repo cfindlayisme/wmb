@@ -42,7 +42,7 @@ func PostMessage(c *gin.Context) {
 		return
 	}
 
-	err := ircclient.SendMessage(env.GetChannel(), ircclient.FormatMessage(msg))
+	err := ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
@@ -66,7 +66,7 @@ func PostDirectedMessage(c *gin.Context) {
 		return
 	}
 
-	err := ircclient.SendMessage(dmsg.Target, ircclient.FormatMessage(msg))
+	err := ircclient.SendMessage(ircclient.IrcConnection, dmsg.Target, ircclient.FormatMessage(msg))
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
@@ -87,7 +87,7 @@ func QueryMessage(c *gin.Context) {
 		return
 	}
 
-	err := ircclient.SendMessage(env.GetChannel(), ircclient.FormatMessage(msg))
+	err := ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
