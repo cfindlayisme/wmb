@@ -123,6 +123,9 @@ jobs:
           docker compose pull
           docker compose up -d
 
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Notify IRC Success
       run: |
         export COMMIT_MSG=$(git log -1 --pretty=%B)
