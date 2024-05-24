@@ -14,10 +14,17 @@ type DirectedIncomingMessage struct {
 type DirectedOutgoingMessage struct {
 	Target  string
 	Message string
+	IRCUser IrcUser
 }
 
 type PrivmsgSubscription struct {
 	Target   string
 	URL      string
 	Password string
+}
+
+type IrcUser struct {
+	Nick string
+	User string
+	Host string
 }

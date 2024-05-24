@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/cfindlayisme/wmb/model"
 	"github.com/cfindlayisme/wmb/webhook"
 )
 
@@ -57,5 +58,10 @@ func processPrivmsg(words []string) {
 
 	log.Printf("Received PRIVMSG from %s!%s@%s to %s: %s\n", nick, user, host, channel, msg)
 
-	webhook.SendPrivmsgWebhook(channel, msg)
+	ircuser := model.IrcUser{
+		Nick: nick,
+		User: user,
+		Host: host,
+	}
+	webhook.SendPrivmsgWebhook(channel, msg, ircuser)
 }

@@ -13,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func SendPrivmsgWebhook(target string, message string) {
+func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 	db := database.DB.GetDB()
 
 	// Prepare the query
@@ -56,6 +56,7 @@ func SendPrivmsgWebhook(target string, message string) {
 		msg := model.DirectedOutgoingMessage{
 			Target:  target,
 			Message: message,
+			IRCUser: ircuser,
 		}
 
 		err := sendPrivmsgWebhookToUrl(url, msg)
