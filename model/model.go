@@ -6,6 +6,7 @@ type IncomingMessage struct {
 	Message    string
 	Password   string
 	ColourCode *int8 // https://modern.ircdocs.horse/formatting.html
+	Broadcast  *bool
 }
 
 type DirectedIncomingMessage struct {

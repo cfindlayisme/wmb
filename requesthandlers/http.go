@@ -1,6 +1,7 @@
 package requesthandlers
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -16,18 +17,16 @@ func validateMessage(msg model.IncomingMessage, c *gin.Context) bool {
 		c.String(http.StatusBadRequest, "Message cannot contain newline characters")
 		return false
 	}
-	validatePassword(msg.Password, c)
 
 	return true
 }
 
-func validatePassword(password string, c *gin.Context) bool {
+func validatePassword(password string) error {
 	if env.GetWebhookPassword() == password {
-		return true
+		return nil
 	}
-	c.String(http.StatusUnauthorized, "Invalid password")
 
-	return false
+	return errors.New("invalid password")
 }
 
 func PostMessage(c *gin.Context) {
@@ -42,7 +41,25 @@ func PostMessage(c *gin.Context) {
 		return
 	}
 
-	err := ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
+	if err := validatePassword(msg.Password); err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		return
+	}
+
+	var err error
+
+	if msg.Broadcast != nil && *msg.Broadcast {
+		channels := env.GetOtherChannels()
+		channels = append(channels, env.GetChannel())
+		for _, channel := range channels {
+			err = ircclient.SendMessage(ircclient.IrcConnection, channel, ircclient.FormatMessage(msg))
+			if err != nil {
+				break
+			}
+		}
+	} else {
+		err = ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
+	}
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
@@ -50,7 +67,6 @@ func PostMessage(c *gin.Context) {
 	c.String(http.StatusOK, "Message sent")
 
 }
-
 func PostDirectedMessage(c *gin.Context) {
 	var dmsg model.DirectedIncomingMessage
 	var msg model.IncomingMessage
@@ -66,13 +82,18 @@ func PostDirectedMessage(c *gin.Context) {
 		return
 	}
 
+	if err := validatePassword(msg.Password); err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		return
+	}
+
 	err := ircclient.SendMessage(ircclient.IrcConnection, dmsg.Target, ircclient.FormatMessage(msg))
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
+		return
 	}
 	c.String(http.StatusOK, "Message sent")
-
 }
 
 func QueryMessage(c *gin.Context) {
@@ -87,13 +108,19 @@ func QueryMessage(c *gin.Context) {
 		return
 	}
 
+	password := c.Query("password") // Extract password from query parameters
+	if err := validatePassword(password); err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		return
+	}
+
 	err := ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
+		return
 	}
 	c.String(http.StatusOK, "Message sent")
-
 }
 
 func PostSubscribePrivmsg(c *gin.Context) {
@@ -104,7 +131,8 @@ func PostSubscribePrivmsg(c *gin.Context) {
 		return
 	}
 
-	if !validatePassword(subscription.Password, c) {
+	if err := validatePassword(subscription.Password); err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
 
@@ -131,7 +159,8 @@ func PostUnsubscribePrivmsg(c *gin.Context) {
 		return
 	}
 
-	if !validatePassword(subscription.Password, c) {
+	if err := validatePassword(subscription.Password); err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
 
