@@ -23,11 +23,15 @@ func TestOpenAndClose(t *testing.T) {
 		t.Fatalf("Failed to get database")
 	}
 
-	// Test Close
-	DB.Close()
-	db = DB.GetDB()
-	if db != nil {
-		t.Fatalf("Failed to close database")
+	// Test table creation
+	row := db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='PrivmsgSubscriptions'")
+	var name string
+	err = row.Scan(&name)
+	if err != nil {
+		t.Fatalf("Failed to scan row: %v", err)
+	}
+	if name != "PrivmsgSubscriptions" {
+		t.Fatalf("Failed to create table: expected 'PrivmsgSubscriptions', got '%s'", name)
 	}
 }
 

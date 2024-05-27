@@ -17,6 +17,18 @@ func (d *Database) Open(databaseFile string) error {
 	if err != nil {
 		return err
 	}
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS PrivmsgSubscriptions (
+		Target TEXT, 
+		URL TEXT, 
+		FailureCount INTEGER DEFAULT 0, 
+		Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
+		PRIMARY KEY (Target, URL)
+	)`)
+	if err != nil {
+		return err
+	}
+
 	d.db = db
 	return nil
 }
