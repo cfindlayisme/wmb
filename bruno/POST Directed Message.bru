@@ -1,0 +1,28 @@
+meta {
+  name: POST Directed Message
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8080/directedMessage
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "Target": "#bot-spam",
+    "IncomingMessage": {
+      "Message": "Hello, World!",
+      "Password": "{{WMB_PASSWORD}}",
+      "ColourCode": {{WMB_COLOURCODE}}
+    }
+  }
+}
+
+body:multipart-form {
+  message: 
+  colourcode: 
+  password: 
+}
