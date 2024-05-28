@@ -114,7 +114,20 @@ func QueryMessage(c *gin.Context) {
 		return
 	}
 
-	err := ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
+	var err error
+
+	if msg.Broadcast != nil && *msg.Broadcast {
+		channels := env.GetOtherChannels()
+		channels = append(channels, env.GetChannel())
+		for _, channel := range channels {
+			err = ircclient.SendMessage(ircclient.IrcConnection, channel, ircclient.FormatMessage(msg))
+			if err != nil {
+				break
+			}
+		}
+	} else {
+		err = ircclient.SendMessage(ircclient.IrcConnection, env.GetChannel(), ircclient.FormatMessage(msg))
+	}
 
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to send message to IRC server")
