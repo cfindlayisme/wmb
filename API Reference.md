@@ -71,7 +71,6 @@ The request body should be a JSON object with the following properties:
     - `Message` (string): The content of the message.
     - `Password` (string): The password for authentication.
     - `ColourCode` (integer, optional): The color code for the message. See [IRC Formatting](https://modern.ircdocs.horse/formatting.html) for more details.
-    - `Broadcast` (boolean, optional): Whether the message should be broadcasted.
 
 Example:
 
@@ -82,6 +81,5 @@ Example:
         "Message": "Hello, world!",
         "Password": "correct_password",
         "ColourCode": 3,
-        "Broadcast": true
     }
 }
