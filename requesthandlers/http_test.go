@@ -3,6 +3,7 @@ package requesthandlers_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
+	"github.com/cfindlayisme/wmb/pointers"
 	"github.com/cfindlayisme/wmb/requesthandlers"
 	"github.com/stretchr/testify/assert"
 
@@ -85,34 +87,53 @@ func TestSendBroadcastMessage(t *testing.T) {
 	os.Setenv("IRC_CHANNEL", "channel1")
 	os.Setenv("OTHER_IRC_CHANNELS", "channel2,channel3")
 
-	// Create a map to track which channels messages are sent to
-	channelMap := make(map[string]bool)
-
-	// Patch the SendMessage function
-	monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
-		channelMap[channel] = true
-		return nil
-	})
-
 	// Create a Gin router
 	router := gin.Default()
 	router.POST("/message", requesthandlers.PostMessage)
 	router.GET("/message", requesthandlers.QueryMessage)
 
-	// Create a test request for PostMessage
-	broadcast := true
-	postBody, _ := json.Marshal(&model.IncomingMessage{Password: "correct_password", Broadcast: &broadcast})
-	postReq, _ := http.NewRequest("POST", "/message", bytes.NewBuffer(postBody))
-	postResp := httptest.NewRecorder()
-	router.ServeHTTP(postResp, postReq)
+	// Test cases where Broadcast is true, false or not set
+	testCases := []struct {
+		name      string
+		broadcast *bool
+		channel1  bool
+		channel2  bool
+		channel3  bool
+	}{
+		{"BroadcastTrue", pointers.BoolPtr(true), true, true, true},
+		{"BroadcastFalse", pointers.BoolPtr(false), true, false, false},
+		{"BroadcastNotSet", nil, true, false, false},
+	}
 
-	// Create a test request for QueryMessage
-	queryReq, _ := http.NewRequest("GET", "/message?Password=correct_password&Broadcast=true", nil)
-	queryResp := httptest.NewRecorder()
-	router.ServeHTTP(queryResp, queryReq)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Create a map to track which channels messages are sent to
+			channelMap := make(map[string]bool)
 
-	// Check that messages were sent to all channels
-	assert.True(t, channelMap["channel1"])
-	assert.True(t, channelMap["channel2"])
-	assert.True(t, channelMap["channel3"])
+			// Patch the SendMessage function
+			monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
+				channelMap[channel] = true
+				return nil
+			})
+
+			// Create a test request for PostMessage
+			postBody, _ := json.Marshal(&model.IncomingMessage{Password: "correct_password", Broadcast: tc.broadcast})
+			postReq, _ := http.NewRequest("POST", "/message", bytes.NewBuffer(postBody))
+			postResp := httptest.NewRecorder()
+			router.ServeHTTP(postResp, postReq)
+
+			// Create a test request for QueryMessage
+			queryReq, _ := http.NewRequest("GET", fmt.Sprintf("/message?Password=correct_password&Broadcast=%v", tc.broadcast), nil)
+			queryResp := httptest.NewRecorder()
+			router.ServeHTTP(queryResp, queryReq)
+
+			// Check that messages were sent to the correct channels
+			assert.Equal(t, tc.channel1, channelMap["channel1"])
+			assert.Equal(t, tc.channel2, channelMap["channel2"])
+			assert.Equal(t, tc.channel3, channelMap["channel3"])
+
+			// Unpatch the SendMessage function after each test case
+			monkey.Unpatch(ircclient.SendMessage)
+		})
+	}
 }
