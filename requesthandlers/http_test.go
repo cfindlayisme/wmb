@@ -29,6 +29,8 @@ func TestEndpointsPasswordProtection(t *testing.T) {
 		return nil
 	})
 
+	defer monkey.UnpatchAll()
+
 	tests := []struct {
 		name     string
 		method   string
