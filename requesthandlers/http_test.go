@@ -19,7 +19,7 @@ import (
 )
 
 func TestEndpointsPasswordProtection(t *testing.T) {
-	os.Setenv("WMB_PASSWORD", "correct_password")
+	os.Setenv("PASSWORD", "correct_password")
 	gin.SetMode(gin.TestMode)
 
 	// Mock the SendMessage function
@@ -81,6 +81,7 @@ func TestEndpointsPasswordProtection(t *testing.T) {
 
 func TestSendBroadcastMessage(t *testing.T) {
 	// Set up environment variables
+	os.Setenv("PASSWORD", "correct_password")
 	os.Setenv("IRC_CHANNEL", "channel1")
 	os.Setenv("OTHER_IRC_CHANNELS", "channel2,channel3")
 
