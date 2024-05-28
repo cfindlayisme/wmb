@@ -124,7 +124,7 @@ Message payload sent to the URL will be like this:
   - **Host** (string): The host of the IRC user.
 - **Timestamp** (time.Time): The time when the message was created, in ISO 8601 format. This is generated using `time.Now()` in Go, which provides the current time.
 
-You can process this accoridngly in whatever you are using to recieve the message, then respond accordingly. At the time of writing this, the message will NOT be re-sent in the event you fail to send it.
+You can process this accoridngly in whatever you are using to recieve the message, then respond accordingly. At the time of writing this, the message will NOT be re-sent in the event you fail to recieve it for any reason.
 
 Respond with 200 OK if processed okay for future-proofing, as error handling/retries will eventualy be built-in.
 
