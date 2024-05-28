@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 
@@ -220,6 +221,48 @@ func TestPostDirectedMessageSuccess(t *testing.T) {
 
 	// Check that the response status is OK
 	assert.Equal(t, http.StatusOK, postResp.Code)
+
+	// Unpatch the SendMessage function after the test
+	monkey.Unpatch(ircclient.SendMessage)
+}
+
+func TestQueryMessageSuccess(t *testing.T) {
+	// Set up environment variables
+	os.Setenv("PASSWORD", "correct_password")
+	os.Setenv("IRC_CHANNEL", "channel1")
+
+	// Create a Gin router
+	router := gin.Default()
+	router.GET("/message", requesthandlers.QueryMessage)
+
+	// Variables to track if the message was sent to the correct channel and its contents
+	var messageSent bool
+	var sentMessage string
+
+	// Patch the SendMessage function
+	monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
+		if channel == "channel1" {
+			messageSent = true
+			sentMessage = message
+		}
+		return nil
+	})
+
+	// Create a test request for QueryMessage
+	testMessage := "Test message"
+	query := fmt.Sprintf("Password=correct_password&Message=%s", url.QueryEscape(testMessage))
+	getReq, _ := http.NewRequest("GET", "/message?"+query, nil)
+	getResp := httptest.NewRecorder()
+	router.ServeHTTP(getResp, getReq)
+
+	// Check that the message was sent to the correct channel
+	assert.True(t, messageSent)
+
+	// Check that the message contents match
+	assert.Equal(t, ircclient.FormatMessage(model.IncomingMessage{Message: testMessage}), sentMessage)
+
+	// Check that the response status is OK
+	assert.Equal(t, http.StatusOK, getResp.Code)
 
 	// Unpatch the SendMessage function after the test
 	monkey.Unpatch(ircclient.SendMessage)
