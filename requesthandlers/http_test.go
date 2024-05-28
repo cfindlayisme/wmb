@@ -60,7 +60,7 @@ func TestEndpointsPasswordProtection(t *testing.T) {
 
 			var req *http.Request
 			if tt.method == "GET" {
-				req, _ = http.NewRequest(tt.method, tt.endpoint+"?password=wrong_password", nil)
+				req, _ = http.NewRequest(tt.method, tt.endpoint+"?Password=wrong_password", nil)
 			} else {
 				body, _ := json.Marshal(tt.body)
 				req, _ = http.NewRequest(tt.method, tt.endpoint, bytes.NewBuffer(body))
