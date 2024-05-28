@@ -2,7 +2,7 @@ version: '3'
 
 services:
   wmb:
-    image: gitea.findlayis.me/chuck/wmb:latest
+    image: ghcr.io/cfindlayisme/wmb:latest
     environment: 
         - IRC_SERVER=
         - IRC_NICK=
