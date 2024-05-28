@@ -31,10 +31,13 @@ POST to /message with the following JSON format:
 {
     "message": "Hello, World!",
     "password": "password",
-    "colourcode": 1
+    "colourcode": 1,
+    "broadcast": true
 }
 ```
 Colourcode is optional, and is the colour of the message in IRC. See https://modern.ircdocs.horse/formatting.html for a list of colours, where the numbers 1-15 are used.
+
+Broadcast is also optional. If set true, it will send the message to all channels, ie, both `OTHER_IRC_CHANNELS` and `IRC_CHANNEL`.
 
 ## Send a message to IRC from CLI
 ```
