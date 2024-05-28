@@ -25,19 +25,8 @@ See `docker-compose.yml` for an example of how to launch the bot. Just have to c
 - `DBFILE` (Optional, what file to use for the database, defaults to `wmb.db` - be sure to map properly if inside docker)
 
 
-## JSON format
-POST to /message with the following JSON format:
-```
-{
-    "message": "Hello, World!",
-    "password": "password",
-    "colourcode": 1,
-    "broadcast": true
-}
-```
-Colourcode is optional, and is the colour of the message in IRC. See https://modern.ircdocs.horse/formatting.html for a list of colours, where the numbers 1-15 are used.
-
-Broadcast is also optional. If set true, it will send the message to all channels, ie, both `OTHER_IRC_CHANNELS` and `IRC_CHANNEL`.
+## API documentation
+See [API Reference](API%20Reference.md) for more information on how to use the API's endpoints in your projects. This details all the schema, endpoints, and variables available.
 
 ## Send a message to IRC from CLI
 ```
