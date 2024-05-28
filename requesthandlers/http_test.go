@@ -3,6 +3,7 @@ package requesthandlers_test
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -263,6 +264,56 @@ func TestQueryMessageSuccess(t *testing.T) {
 
 	// Check that the response status is OK
 	assert.Equal(t, http.StatusOK, getResp.Code)
+
+	// Unpatch the SendMessage function after the test
+	monkey.Unpatch(ircclient.SendMessage)
+}
+
+func TestIrcSendMessageReturnedError(t *testing.T) {
+	// Set up environment variables
+	os.Setenv("PASSWORD", "correct_password")
+	os.Setenv("IRC_CHANNEL", "channel1")
+
+	// Create a Gin router
+	router := gin.Default()
+	router.POST("/message", requesthandlers.PostMessage)
+	router.POST("/directedMessage", requesthandlers.PostDirectedMessage)
+	router.GET("/message", requesthandlers.QueryMessage)
+
+	// Patch the SendMessage function to return an error
+	monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
+		return errors.New("Test error")
+	})
+
+	// Create a test request for PostMessage
+	testMessage := "Test message"
+	incomingMessage := model.IncomingMessage{Message: testMessage, Password: "correct_password"}
+	postBody, _ := json.Marshal(&incomingMessage)
+	postReq, _ := http.NewRequest("POST", "/message", bytes.NewBuffer(postBody))
+	postResp := httptest.NewRecorder()
+	router.ServeHTTP(postResp, postReq)
+
+	// Check that the response status is Internal Server Error
+	assert.Equal(t, http.StatusInternalServerError, postResp.Code)
+
+	// Create a test request for PostDirectedMessage
+	directedMessage := model.DirectedIncomingMessage{Target: "target1", IncomingMessage: model.IncomingMessage{Message: testMessage, Password: "correct_password"}}
+	postBody, _ = json.Marshal(&directedMessage)
+	postReq, _ = http.NewRequest("POST", "/directedMessage", bytes.NewBuffer(postBody))
+	postResp = httptest.NewRecorder()
+	router.ServeHTTP(postResp, postReq)
+
+	// Check that the response status is Internal Server Error
+	assert.Equal(t, http.StatusInternalServerError, postResp.Code)
+
+	// Create a test request for QueryMessage
+	query := fmt.Sprintf("Password=correct_password&Message=%s", url.QueryEscape(testMessage))
+	getReq, _ := http.NewRequest("GET", "/message?"+query, nil)
+	getResp := httptest.NewRecorder()
+	router.ServeHTTP(getResp, getReq)
+
+	// Check that the response status is Internal Server Error
+	assert.Equal(t, http.StatusInternalServerError, getResp.Code)
 
 	// Unpatch the SendMessage function after the test
 	monkey.Unpatch(ircclient.SendMessage)
