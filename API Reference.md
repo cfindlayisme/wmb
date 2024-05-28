@@ -157,9 +157,11 @@ Example Success Response:
 {
     "status": "success",
     "message": "Subscription successful"
-}```
+}
+```
 
 Example Failure Response:
+
 ```json
 {
     "status": "failure",
@@ -207,6 +209,7 @@ Example Success Response:
 ```
 
 Example Failure Response:
+
 ```json
 {
     "status": "failure",
