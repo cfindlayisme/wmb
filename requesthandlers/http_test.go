@@ -12,6 +12,7 @@ import (
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
 	"github.com/cfindlayisme/wmb/requesthandlers"
+	"github.com/stretchr/testify/assert"
 
 	"bou.ke/monkey"
 	"github.com/gin-gonic/gin"
@@ -76,4 +77,41 @@ func TestEndpointsPasswordProtection(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSendBroadcastMessage(t *testing.T) {
+	// Set up environment variables
+	os.Setenv("IRC_CHANNEL", "channel1")
+	os.Setenv("OTHER_IRC_CHANNELS", "channel2,channel3")
+
+	// Create a map to track which channels messages are sent to
+	channelMap := make(map[string]bool)
+
+	// Patch the SendMessage function
+	monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
+		channelMap[channel] = true
+		return nil
+	})
+
+	// Create a Gin router
+	router := gin.Default()
+	router.POST("/message", requesthandlers.PostMessage)
+	router.GET("/message", requesthandlers.QueryMessage)
+
+	// Create a test request for PostMessage
+	broadcast := true
+	postBody, _ := json.Marshal(&model.IncomingMessage{Password: "correct_password", Broadcast: &broadcast})
+	postReq, _ := http.NewRequest("POST", "/message", bytes.NewBuffer(postBody))
+	postResp := httptest.NewRecorder()
+	router.ServeHTTP(postResp, postReq)
+
+	// Create a test request for QueryMessage
+	queryReq, _ := http.NewRequest("GET", "/message?Password=correct_password&Broadcast=true", nil)
+	queryResp := httptest.NewRecorder()
+	router.ServeHTTP(queryResp, queryReq)
+
+	// Check that messages were sent to all channels
+	assert.True(t, channelMap["channel1"])
+	assert.True(t, channelMap["channel2"])
+	assert.True(t, channelMap["channel3"])
 }
