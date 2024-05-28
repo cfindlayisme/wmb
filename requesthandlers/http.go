@@ -108,7 +108,7 @@ func QueryMessage(c *gin.Context) {
 		return
 	}
 
-	password := c.Query("password") // Extract password from query parameters
+	password := c.Query("Password") // Extract password from query parameters
 	if err := validatePassword(password); err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
