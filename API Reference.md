@@ -50,7 +50,7 @@ The URL should include the following query parameters:
 - `Broadcast` (boolean, optional): Whether the message should be broadcasted to all channels setup in the enviornment variables.
 
 Example:
-```http
+```
 http://localhost:8080/message?Message=Hello,%20World!&Password=password&ColourCode=1&Broadcast=true
 ```
 
