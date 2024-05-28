@@ -139,3 +139,46 @@ func TestSendBroadcastMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestPostMessageSuccess(t *testing.T) {
+	// Set up environment variables
+	os.Setenv("PASSWORD", "correct_password")
+	os.Setenv("IRC_CHANNEL", "channel1")
+
+	// Create a Gin router
+	router := gin.Default()
+	router.POST("/message", requesthandlers.PostMessage)
+
+	// Variables to track if the message was sent to the correct channel and its contents
+	var messageSent bool
+	var sentMessage string
+
+	// Patch the SendMessage function
+	monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
+		if channel == "channel1" {
+			messageSent = true
+			sentMessage = message
+		}
+		return nil
+	})
+
+	// Create a test request for PostMessage
+	testMessage := "Test message"
+	incomingMessage := model.IncomingMessage{Message: testMessage, Password: "correct_password"}
+	postBody, _ := json.Marshal(&incomingMessage)
+	postReq, _ := http.NewRequest("POST", "/message", bytes.NewBuffer(postBody))
+	postResp := httptest.NewRecorder()
+	router.ServeHTTP(postResp, postReq)
+
+	// Check that the message was sent to the correct channel
+	assert.True(t, messageSent)
+
+	// Check that the message contents match
+	assert.Equal(t, ircclient.FormatMessage(incomingMessage), sentMessage)
+
+	// Check that the response status is OK
+	assert.Equal(t, http.StatusOK, postResp.Code)
+
+	// Unpatch the SendMessage function after the test
+	monkey.Unpatch(ircclient.SendMessage)
+}
