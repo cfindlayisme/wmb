@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/cfindlayisme/wmb/database"
 	"github.com/cfindlayisme/wmb/env"
@@ -37,7 +40,16 @@ func main() {
 		}
 	}()
 
-	ircclient.Loop()
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
-	ircclient.Disconnect()
+	// Launch a goroutine to handle termination signals
+	go func() {
+		<-sigs
+
+		ircclient.Disconnect()
+		database.DB.Close()
+	}()
+
+	ircclient.Loop()
 }
