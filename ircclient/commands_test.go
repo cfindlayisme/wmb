@@ -1,6 +1,7 @@
 package ircclient_test
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -123,6 +124,17 @@ func TestSetUser(t *testing.T) {
 	conn.On("Write", []byte("USER wmb 0 * :Webhook message bot\r\r\n")).Return(37, nil)
 
 	err := ircclient.SetUser(conn)
+	require.NoError(t, err)
+
+	conn.AssertExpectations(t)
+}
+
+func TestSendQuit(t *testing.T) {
+	conn := new(MockConn)
+	quitMessage := "Client Quit"
+	conn.On("Write", []byte(fmt.Sprintf("QUIT :%s\r\n", quitMessage))).Return(len(quitMessage)+7, nil)
+
+	err := ircclient.SendQuit(conn, quitMessage)
 	require.NoError(t, err)
 
 	conn.AssertExpectations(t)

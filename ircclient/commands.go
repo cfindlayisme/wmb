@@ -67,3 +67,8 @@ func SetUser(conn net.Conn) error {
 	_, err := fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\r\n")
 	return err
 }
+
+func SendQuit(conn net.Conn, quitMessage string) error {
+	_, err := fmt.Fprintf(conn, "QUIT :%s\r\n", CleanMessage(quitMessage))
+	return err
+}
