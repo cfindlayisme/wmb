@@ -44,6 +44,8 @@ func initialize() {
 }
 
 func Disconnect() error {
+	SendQuit(IrcConnection, "Disconnecting!")
+
 	return IrcConnection.Close()
 }
 
