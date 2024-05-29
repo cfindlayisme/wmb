@@ -48,6 +48,7 @@ func main() {
 		<-sigs
 
 		ircclient.Disconnect()
+		database.DB.Close()
 	}()
 
 	ircclient.Loop()
