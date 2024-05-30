@@ -15,7 +15,7 @@ import (
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
 	"github.com/cfindlayisme/wmb/pointers"
-	"github.com/cfindlayisme/wmb/requesthandlers"
+	"github.com/cfindlayisme/wmb/router"
 	"github.com/stretchr/testify/assert"
 
 	"bou.ke/monkey"
@@ -48,22 +48,7 @@ func TestEndpointsPasswordProtection(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := gin.Default()
-
-			switch tt.endpoint {
-			case "/message":
-				if tt.method == "POST" {
-					router.POST(tt.endpoint, requesthandlers.PostMessage)
-				} else if tt.method == "GET" {
-					router.GET(tt.endpoint, requesthandlers.QueryMessage)
-				}
-			case "/directedMessage":
-				router.POST(tt.endpoint, requesthandlers.PostDirectedMessage)
-			case "/subscribe/message":
-				router.POST(tt.endpoint, requesthandlers.PostSubscribePrivmsg)
-			case "/unsubscribe/message":
-				router.POST(tt.endpoint, requesthandlers.PostUnsubscribePrivmsg)
-			}
+			router := router.SetupRouter()
 
 			var req *http.Request
 			if tt.method == "GET" {
@@ -91,10 +76,7 @@ func TestSendBroadcastMessage(t *testing.T) {
 	os.Setenv("IRC_CHANNEL", "channel1")
 	os.Setenv("OTHER_IRC_CHANNELS", "channel2,channel3")
 
-	// Create a Gin router
-	router := gin.Default()
-	router.POST("/message", requesthandlers.PostMessage)
-	router.GET("/message", requesthandlers.QueryMessage)
+	router := router.SetupRouter()
 
 	// Test cases where Broadcast is true, false or not set
 	testCases := []struct {
@@ -147,9 +129,7 @@ func TestPostMessageSuccess(t *testing.T) {
 	os.Setenv("PASSWORD", "correct_password")
 	os.Setenv("IRC_CHANNEL", "channel1")
 
-	// Create a Gin router
-	router := gin.Default()
-	router.POST("/message", requesthandlers.PostMessage)
+	router := router.SetupRouter()
 
 	// Variables to track if the message was sent to the correct channel and its contents
 	var messageSent bool
@@ -189,9 +169,7 @@ func TestPostDirectedMessageSuccess(t *testing.T) {
 	// Set up environment variables
 	os.Setenv("PASSWORD", "correct_password")
 
-	// Create a Gin router
-	router := gin.Default()
-	router.POST("/directedMessage", requesthandlers.PostDirectedMessage)
+	router := router.SetupRouter()
 
 	// Variables to track if the message was sent to the correct channel and its contents
 	var messageSent bool
@@ -232,9 +210,7 @@ func TestQueryMessageSuccess(t *testing.T) {
 	os.Setenv("PASSWORD", "correct_password")
 	os.Setenv("IRC_CHANNEL", "channel1")
 
-	// Create a Gin router
-	router := gin.Default()
-	router.GET("/message", requesthandlers.QueryMessage)
+	router := router.SetupRouter()
 
 	// Variables to track if the message was sent to the correct channel and its contents
 	var messageSent bool
@@ -274,11 +250,7 @@ func TestIrcSendMessageReturnedError(t *testing.T) {
 	os.Setenv("PASSWORD", "correct_password")
 	os.Setenv("IRC_CHANNEL", "channel1")
 
-	// Create a Gin router
-	router := gin.Default()
-	router.POST("/message", requesthandlers.PostMessage)
-	router.POST("/directedMessage", requesthandlers.PostDirectedMessage)
-	router.GET("/message", requesthandlers.QueryMessage)
+	router := router.SetupRouter()
 
 	// Patch the SendMessage function to return an error
 	monkey.Patch(ircclient.SendMessage, func(conn net.Conn, channel string, message string) error {
