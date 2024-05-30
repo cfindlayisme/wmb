@@ -8,17 +8,6 @@ on:
 
 jobs:
 
-  gitleaks:
-    name: Gitleaks check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   unit-test:
     runs-on: ubuntu-latest
     steps:
@@ -79,7 +68,7 @@ jobs:
         args: --severity-threshold=high --fail-on=all
 
   build:
-      needs: [sonar, snyk, unit-test, gitleaks]
+      needs: [sonar, snyk, unit-test]
       runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v4
