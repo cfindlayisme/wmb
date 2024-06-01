@@ -3,6 +3,8 @@ Very simple bot to send IRC messages from webhooks.
 ## Launching
 See `docker-compose.yaml` for an example of how to launch the bot. Just have to change envionment variables and run `docker-compose up -d`
 
+Builds exist for `amd64` amd `arm64` architectures in the docker repo, so it should work on most systems incl raspberry pis and x86_64 systems.
+
 ## Envionment Variables
 - `IRC_SERVER` in server:port format
 - `IRC_CHANNEL` 
