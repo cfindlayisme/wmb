@@ -148,6 +148,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKER_REPO }}:latest
+        if: github.ref == 'refs/heads/main'
       - name: Build Docker images for ghcr.io
         uses: docker/build-push-action@v3
         with:
