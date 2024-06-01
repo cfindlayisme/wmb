@@ -81,13 +81,13 @@ jobs:
           registry: ${{ secrets.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Build and push Docker images
+      - name: Build Docker images
         uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: false
+          load: true  # Load the image into the Docker environment
           tags: ${{ secrets.DOCKER_REPO }}:latest
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
