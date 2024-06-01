@@ -108,12 +108,18 @@ jobs:
         exit-code: '1'
         severity: 'HIGH'
         ignore-unfixed: true
-    - name: Notify IRC
+    - name: Notify IRC on Success
       run: |
         export COMMIT_MSG=$(git log -1 --pretty=%B)
         export MESSAGE="Build and scan of ${{ secrets.DOCKER_REPO }}:latest completed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 3}" https://convos.findlayis.me/wmb/message
       if: success()
+    - name: Notify IRC on Failure
+      run: |
+        export COMMIT_MSG=$(git log -1 --pretty=%B)
+        export MESSAGE="Build and scan of ${{ secrets.DOCKER_REPO }}:latest failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 4}" https://convos.findlayis.me/wmb/message
+      if: failure()
 
   build-and-push:
       needs: build-and-scan
@@ -149,12 +155,18 @@ jobs:
           docker tag ${{ secrets.DOCKER_REPO }}:latest ghcr.io/${{ github.repository }}:latest
           docker push ghcr.io/${{ github.repository }}:latest
         if: github.ref == 'refs/heads/main'
-      - name: Notify IRC
+      - name: Notify IRC on Success
         run: |
           export COMMIT_MSG=$(git log -1 --pretty=%B)
           export MESSAGE="Build and push of ${{ secrets.DOCKER_REPO }}:latest completed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 3}" https://convos.findlayis.me/wmb/message
         if: success()
+      - name: Notify IRC on Failure
+        run: |
+          export COMMIT_MSG=$(git log -1 --pretty=%B)
+          export MESSAGE="Build and push of ${{ secrets.DOCKER_REPO }}:latest failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 4}" https://convos.findlayis.me/wmb/message
+        if: failure()
       
   deploy:
     needs: [build-and-push]
