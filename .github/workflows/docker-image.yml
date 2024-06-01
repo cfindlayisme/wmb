@@ -87,12 +87,19 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
-          load: true  # Load the image into the Docker environment
           tags: ${{ secrets.DOCKER_REPO }}:latest
+      - name: Build and load amd64 Docker image for vuln scanning
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          load: true
+          tags: ${{ secrets.DOCKER_REPO }}:latest-scan
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ secrets.DOCKER_REPO }}:latest
+          image-ref: ${{ secrets.DOCKER_REPO }}:latest-scan
           exit-code: '1'
           severity: 'HIGH'
           ignore-unfixed: true
