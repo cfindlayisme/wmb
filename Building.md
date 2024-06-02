@@ -1,7 +1,7 @@
 # Building manually
 
 ## Pre-requisites
-You need golang installed to build this. I tend to use very new versions since vulnabilities move fast in the underlying libraries, so I'd recommend visiting the [golang download page](https://golang.org/dl/) and getting the latest version.
+You need golang installed to build this. I tend to use very new versions since vulnabilities move fast in the underlying libraries, so I'd recommend visiting the [golang download page](https://golang.org/dl/) and getting the latest version. At the time of writing this, I'm far ahead of the golang version included in the debian/ubuntu repos.
 
 You'll also need `make` installed, and libc6 (which should be installed - just a note in case you're trying to run on alpine)
 Debian/Ubuntu:
