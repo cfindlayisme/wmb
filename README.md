@@ -20,16 +20,12 @@ Builds exist for `amd64` amd `arm64` architectures in the docker repo, so it sho
 ## API documentation
 See [API Reference](API%20Reference.md) for more information on how to use the API's endpoints in your projects. This details all the schema, endpoints, and variables available.
 
-## Send a message to IRC from CLI
-```
-curl -X POST -H "Content-Type: application/json" -d '{"message":"Hello, World! stuff", "password":"password"}' http://localhost:8080/message
-```
-Or, if you prefer to use just a URL:
-```
-curl http://localhost:8080/message?Message=Hello,%20World!&Password=password
+## Examples
+See [Examples](Examples.md) for some examples of how to use the bot in your projects.
 
-```
-Note using this second method, the Message and Password parameters are case sensitive.
+## Building
+See [Building](Building.md) for information on how to build the bot if not using a published build.
+
 ## nginx reverse proxy
 ```
 location /wmb {
@@ -39,31 +35,6 @@ location /wmb {
 ```
 
 In your desired config. Then you can POST to domain.tld/wmb/message to send out a webhook.
-
-## GitHub Actions pipeline success/failure message
-Set the secret `WMB_PASSWORD` in your GitHub repo, then add the following to your pipeline after the step you wish to send out success/failure messages:
-```
-- name: Notify IRC Success
-    run: |
-    export COMMIT_MSG=$(git log -1 --pretty=%B)
-    export MESSAGE="Build of project completed successfully with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-    curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 3}" https://domain/wmb/message
-    if: success()
-
-- name: Notify IRC Failure
-    run: |
-    export COMMIT_MSG=$(git log -1 --pretty=%B)
-    export MESSAGE="Build of project failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-    curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ secrets.WMB_PASSWORD }}\", \"colourcode\": 4}" https://domain/wmb/message
-    if: failure()
-```
-
-![Example Image](example-message-github.png)
-
-## I don't want to use docker
-Fine, just clone the repo and run `make`. A binary will be built in the root of the repo called `wmb` that will work just as good as the docker container, just set your envionment variables and run it.
-
-Note: You'll need to have go installed to build the binary.
 
 ## Resource usage
 For those of you running this on tiny VMs, the resource usage is pretty low - barely any CPU usage, and about 12MB of RAM usage (which is pretty good considering it's running an IRC client and a web server.)
