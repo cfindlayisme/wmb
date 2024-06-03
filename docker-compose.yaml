@@ -4,10 +4,15 @@ services:
   wmb:
     image: ghcr.io/cfindlayisme/wmb:latest
     environment: 
-        - IRC_SERVER=
-        - IRC_NICK=
-        - IRC_CHANNEL=
-        - PASSWORD=
+        - IRC_SERVER=irc.serverfail.party
+        - IRC_NICK=wmb-didnotconfigure
+        - IRC_CHANNEL=#botspam
+        - PASSWORD=testpassword
+        # - NICKSERV_PASSWORD=
+        # - OTHER_IRC_CHANNELS=
+        # - SELF_MODE=
+        # - DBFILE=
+        # - PORT= # shouldn't be changed inside docker unless you know what you are doing
     ports:
         - "8080:8080"
     restart: always
