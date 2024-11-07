@@ -175,17 +175,26 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy image to production
-      uses: appleboy/ssh-action@master
+    - name: Retrieve kubeconfig from Vault
+      id: import-secrets
+      uses: hashicorp/vault-action@v2.4.0
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_SECRET }}
-        port: 22
-        script: |
-          cd /srv/wmb
-          docker compose pull
-          docker compose up -d
+        url: ${{ secrets.VAULT_ADDR }}
+        method: token
+        token: ${{ secrets.VAULT_TOKEN }}
+        secrets: kv/data/pipeline/k3s kubeconfig
+        exportEnv: true
+    
+    - name: Save kubeconfig to file
+      run: |
+        mkdir -p $HOME/.kube
+        echo '${{ steps.import-secrets.outputs.kubeconfig }}' > $HOME/.kube/config
+        echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
+
+    - name: Restart Deployment
+      run: |
+        kubectl -n staging rollout restart deployment wmb
+        kubectl -n production rollout restart deployment wmb
 
     - uses: actions/checkout@v4
       with:
