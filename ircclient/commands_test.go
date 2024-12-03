@@ -121,7 +121,7 @@ func TestSendNotice(t *testing.T) {
 
 func TestSetUser(t *testing.T) {
 	conn := new(MockConn)
-	conn.On("Write", []byte("USER wmb 0 * :Webhook message bot\r\r\n")).Return(37, nil)
+	conn.On("Write", []byte("USER wmb 0 * :Webhook message bot\r\n")).Return(37, nil)
 
 	err := ircclient.SetUser(conn)
 	require.NoError(t, err)
