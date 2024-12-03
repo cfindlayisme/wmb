@@ -18,9 +18,7 @@ func Connect(server string) error {
 	}
 
 	setConnection(conn)
-
 	initialize()
-
 	return nil
 }
 
@@ -49,7 +47,6 @@ func initializePostConnect() {
 
 func Disconnect() error {
 	SendQuit(IrcConnection, "Disconnecting!")
-
 	return IrcConnection.Close()
 }
 
@@ -58,48 +55,65 @@ func setConnection(conn net.Conn) {
 }
 
 func Loop() {
-	isPostConnect := false // Tracks if the connection is ready for commands
+	messageChannel := make(chan string)
+	errorChannel := make(chan error)
+
+	// Start a goroutine for reading messages
+	go func() {
+		readMessages(IrcConnection, messageChannel, errorChannel)
+	}()
+
+	isPostConnect := false
 
 	for {
-		message, err := readMessage(IrcConnection)
-		if err != nil {
-			log.Println("Failed to read message on TCP buffer:", err)
-			break
-		}
+		select {
+		case message, ok := <-messageChannel:
+			if !ok {
+				return // Exit the loop when the channel is closed
+			}
 
-		message = strings.TrimSuffix(message, "\n")
-		words := strings.Split(message, " ")
+			words := strings.Split(message, " ")
 
-		if strings.HasPrefix(message, "PING") {
-			ReturnPong(IrcConnection, message)
-		} else if len(words) >= 2 && words[1] == "PRIVMSG" {
-			processPrivmsg(words)
-		} else if len(words) >= 2 && words[1] == "001" {
-			// 001 Welcome message
-			isPostConnect = true
-		} else if len(words) >= 2 && (words[1] == "376" || words[1] == "422") {
-			// 376: End of MOTD, 422: No MOTD
-			isPostConnect = true
-		} else {
-			log.Println("Raw unprocessed message:", message)
-		}
+			if strings.HasPrefix(message, "PING") {
+				ReturnPong(IrcConnection, message)
+			} else if len(words) >= 2 && words[1] == "PRIVMSG" {
+				processPrivmsg(words)
+			} else if len(words) >= 2 && words[1] == "001" {
+				isPostConnect = true
+			} else if len(words) >= 2 && (words[1] == "376" || words[1] == "422") {
+				isPostConnect = true
+			} else {
+				log.Println("Raw unprocessed message:", message)
+			}
 
-		if isPostConnect {
-			initializePostConnect()
-			log.Println("Connected to IRC server - doing post-connect routine")
-			isPostConnect = false
+			if isPostConnect {
+				initializePostConnect()
+				log.Println("Connected to IRC server - doing post-connect routine")
+				isPostConnect = false
+			}
+
+		case err := <-errorChannel:
+			log.Println("Error reading from connection:", err)
+			return
 		}
 	}
 }
 
-func readMessage(conn net.Conn) (string, error) {
-	reader := bufio.NewReader(conn)
+func readMessages(conn net.Conn, messageChannel chan<- string, errorChannel chan<- error) {
+	reader := bufio.NewReaderSize(conn, 65536) // Increase buffer size for high-traffic servers
 
-	message, err := reader.ReadString('\n')
-	if err != nil {
-		return "", err
+	for {
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			errorChannel <- err
+			close(messageChannel) // Signal the loop to stop
+			return
+		}
+
+		// Handle multiple lines in a single read
+		messages := strings.Split(strings.TrimRight(message, "\r\n"), "\r\n")
+		for _, msg := range messages {
+			messageChannel <- msg
+		}
 	}
-
-	message = strings.TrimRight(message, "\r\n")
-	return message, nil
 }
