@@ -72,3 +72,9 @@ func SendQuit(conn net.Conn, quitMessage string) error {
 	_, err := fmt.Fprintf(conn, "QUIT :%s\r\n", CleanMessage(quitMessage))
 	return err
 }
+
+func SendCTCPReply(conn net.Conn, target, command, response string) error {
+	ctcpMessage := fmt.Sprintf("\x01%s %s\x01", command, CleanMessage(response))
+	_, err := fmt.Fprintf(conn, "NOTICE %s :%s\r\n", target, ctcpMessage)
+	return err
+}

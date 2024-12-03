@@ -1,6 +1,7 @@
 package ircclient
 
 import (
+	"bufio"
 	"log"
 	"net"
 	"strings"
@@ -26,6 +27,9 @@ func Connect(server string) error {
 func initialize() {
 	SetNick(IrcConnection, env.GetNick())
 	SetUser(IrcConnection)
+}
+
+func initializePostConnect() {
 	if env.GetNickservPassword() != "" {
 		SendMessage(IrcConnection, "NickServ", "IDENTIFY "+env.GetNickservPassword())
 	}
@@ -54,6 +58,8 @@ func setConnection(conn net.Conn) {
 }
 
 func Loop() {
+	isPostConnect := false // Tracks if the connection is ready for commands
+
 	for {
 		message, err := readMessage(IrcConnection)
 		if err != nil {
@@ -68,17 +74,32 @@ func Loop() {
 			ReturnPong(IrcConnection, message)
 		} else if len(words) >= 2 && words[1] == "PRIVMSG" {
 			processPrivmsg(words)
+		} else if len(words) >= 2 && words[1] == "001" {
+			// 001 Welcome message
+			isPostConnect = true
+		} else if len(words) >= 2 && (words[1] == "376" || words[1] == "422") {
+			// 376: End of MOTD, 422: No MOTD
+			isPostConnect = true
 		} else {
 			log.Println("Raw unprocessed message:", message)
+		}
+
+		if isPostConnect {
+			initializePostConnect()
+			log.Println("Connected to IRC server - doing post-connect routine")
+			isPostConnect = false
 		}
 	}
 }
 
 func readMessage(conn net.Conn) (string, error) {
-	buffer := make([]byte, 512)
-	n, err := conn.Read(buffer)
+	reader := bufio.NewReader(conn)
+
+	message, err := reader.ReadString('\n')
 	if err != nil {
 		return "", err
 	}
-	return string(buffer[:n]), nil
+
+	message = strings.TrimRight(message, "\r\n")
+	return message, nil
 }
