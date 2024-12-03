@@ -147,7 +147,6 @@ func TestSendCTCPReply(t *testing.T) {
 	response := "wmb - github.com/cfindlayisme/wmb"
 	expectedMessage := fmt.Sprintf("NOTICE %s :\x01%s %s\x01\r\n", target, command, response)
 
-	// Mock the Write method
 	conn.On("Write", []byte(expectedMessage)).Return(len(expectedMessage), nil)
 
 	err := ircclient.SendCTCPReply(conn, target, command, response)
