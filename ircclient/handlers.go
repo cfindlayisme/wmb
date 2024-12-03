@@ -51,7 +51,7 @@ func processPrivmsg(words []string) {
 
 	// Check if the message is a CTCP request
 	if strings.HasPrefix(msg, "\x01") && strings.HasSuffix(msg, "\x01") {
-		processCTCP(nick, user, host, channel, msg[1:len(msg)-1]) // Remove wrapping \x01
+		processCTCP(nick, user, host, msg[1:len(msg)-1]) // Remove wrapping \x01
 		return
 	}
 
@@ -65,7 +65,7 @@ func processPrivmsg(words []string) {
 	webhook.SendPrivmsgWebhook(channel, msg, ircuser)
 }
 
-func processCTCP(nick, user, host, channel, msg string) {
+func processCTCP(nick, user, host, msg string) {
 	// CTCP requests are formatted as \x01COMMAND data\x01
 	msg = strings.TrimSuffix(msg, "\x01") // Remove trailing \x01
 	parts := strings.SplitN(msg, " ", 2)  // Split command and optional data
