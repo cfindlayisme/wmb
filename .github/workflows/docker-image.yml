@@ -104,7 +104,7 @@ jobs:
         export MESSAGE="Vulnerability scan for https://github.com/${{ github.repository }} failed with commit message: $COMMIT_MSG. See https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         curl -X POST -H "Content-Type: application/json" -d "{\"message\": \"$MESSAGE\", \"password\": \"${{ steps.import-secrets-wmb.outputs.WMB_PASSWORD }}\", \"colourcode\": 4}" ${{ steps.import-secrets-wmb.outputs.WMB_URL }}
       if: failure()
-      
+
   build-and-push:
     needs: [sonar, nancy, unit-test]
     runs-on: ubuntu-latest
@@ -191,6 +191,20 @@ jobs:
         run: |
           kubectl -n production rollout restart deployment wmb
         if: github.ref == 'refs/heads/main'
+
+      - name: Retrieve wmb info from vault
+        id: import-secrets-wmb
+        uses: hashicorp/vault-action@v3.0.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            kv/data/pipeline/wmb WMB_URL ;
+            kv/data/pipeline/wmb WMB_PASSWORD
+          exportEnv: true
+
       - name: Notify IRC Success
         run: |
           export COMMIT_MSG=$(git log -1 --pretty=%B)
