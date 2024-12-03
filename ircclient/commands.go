@@ -71,7 +71,7 @@ func SendNotice(conn net.Conn, target string, message string) error {
 }
 
 func SetUser(conn net.Conn) error {
-	_, err := fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\r\n")
+	_, err := fmt.Fprintf(conn, "USER wmb 0 * :Webhook message bot\r\n")
 	return err
 }
 
