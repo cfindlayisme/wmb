@@ -121,7 +121,7 @@ func TestSendNotice(t *testing.T) {
 
 func TestSetUser(t *testing.T) {
 	conn := new(MockConn)
-	conn.On("Write", []byte("USER wmb 0 * :Webhook message bot\r\r\n")).Return(37, nil)
+	conn.On("Write", []byte("USER wmb 0 * :Webhook message bot\r\n")).Return(37, nil)
 
 	err := ircclient.SetUser(conn)
 	require.NoError(t, err)
@@ -135,6 +135,21 @@ func TestSendQuit(t *testing.T) {
 	conn.On("Write", []byte(fmt.Sprintf("QUIT :%s\r\n", quitMessage))).Return(len(quitMessage)+7, nil)
 
 	err := ircclient.SendQuit(conn, quitMessage)
+	require.NoError(t, err)
+
+	conn.AssertExpectations(t)
+}
+
+func TestSendCTCPReply(t *testing.T) {
+	conn := new(MockConn)
+	target := "TestNick"
+	command := "VERSION"
+	response := "wmb - github.com/cfindlayisme/wmb"
+	expectedMessage := fmt.Sprintf("NOTICE %s :\x01%s %s\x01\r\n", target, command, response)
+
+	conn.On("Write", []byte(expectedMessage)).Return(len(expectedMessage), nil)
+
+	err := ircclient.SendCTCPReply(conn, target, command, response)
 	require.NoError(t, err)
 
 	conn.AssertExpectations(t)

@@ -49,6 +49,12 @@ func processPrivmsg(words []string) {
 	msg = strings.TrimPrefix(msg, ":")  // Remove leading :
 	msg = strings.TrimSuffix(msg, "\r") // Remove trailing \r
 
+	// Check if the message is a CTCP request
+	if strings.HasPrefix(msg, "\x01") && strings.HasSuffix(msg, "\x01") {
+		processCTCP(nick, user, host, msg[1:len(msg)-1]) // Remove wrapping \x01
+		return
+	}
+
 	log.Printf("Received PRIVMSG from %s!%s@%s to %s: %s\n", nick, user, host, channel, msg)
 
 	ircuser := model.IrcUser{
@@ -57,4 +63,21 @@ func processPrivmsg(words []string) {
 		Host: host,
 	}
 	webhook.SendPrivmsgWebhook(channel, msg, ircuser)
+}
+
+func processCTCP(nick, user, host, msg string) {
+	// CTCP requests are formatted as \x01COMMAND data\x01
+	msg = strings.TrimSuffix(msg, "\x01") // Remove trailing \x01
+	parts := strings.SplitN(msg, " ", 2)  // Split command and optional data
+	command := parts[0]
+
+	switch command {
+
+	case "VERSION":
+		log.Printf("Received CTCP VERSION request from %s!%s@%s\n", nick, user, host)
+		SendCTCPReply(IrcConnection, nick, "VERSION", "wmb - github.com/cfindlayisme/wmb")
+	default:
+		log.Printf("Unknown CTCP command '%s' from %s!%s@%s\n", command, nick, user, host)
+
+	}
 }
