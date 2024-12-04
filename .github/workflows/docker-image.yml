@@ -122,17 +122,25 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build Docker images for ghcr.io
+    - name: Build and push :staging tag
       uses: docker/build-push-action@v6
       with:
         context: .
         file: ./Dockerfile
         platforms: linux/amd64,linux/arm64
         push: true
-        tags: |
-          ghcr.io/${{ github.repository }}:staging
-          ${{ github.ref == 'refs/heads/main' && 'ghcr.io/${{ github.repository }}:latest' || '' }}
+        tags: ghcr.io/${{ github.repository }}:staging
 
+    - name: Build and push :latest tag
+      if: github.ref == 'refs/heads/main'
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./Dockerfile
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: ghcr.io/${{ github.repository }}:latest
+        
     - name: Retrieve wmb info from vault
       id: import-secrets-wmb
       uses: hashicorp/vault-action@v3.0.0
