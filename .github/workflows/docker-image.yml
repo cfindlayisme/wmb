@@ -15,18 +15,6 @@ jobs:
     - uses: actions/setup-go@v5
       with:
         go-version: '1.21.3'
-    - name: Install dependencies for go
-      run: go mod download
-    - name: Unit Testing
-      run: go test -v ./...
-    - name: Generate coverage report
-      run: go test -coverprofile=coverage.out ./...
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-report
-        path: coverage.out
-
     - name: Retrieve wmb info from vault
       id: import-secrets-wmb
       uses: hashicorp/vault-action@v3.0.0
@@ -39,6 +27,18 @@ jobs:
             kv/data/pipeline/wmb WMB_URL ;
             kv/data/pipeline/wmb WMB_PASSWORD
         exportEnv: true
+    - name: Install dependencies for go
+      run: go mod download
+    - name: Unit Testing
+      run: go test -v ./...
+    - name: Generate coverage report
+      run: go test -coverprofile=coverage.out ./...
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage.out
+
     - name: Notify IRC Success
       run: |
         export COMMIT_MSG=$(git log -1 --pretty=%B)
@@ -77,9 +77,6 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: 1.22.3
-    - name: Check for Go vulnerabilities
-      run: |
-        go list -json -m all | docker run --rm -i sonatypecommunity/nancy:latest sleuth
     - name: Retrieve wmb info from vault
       id: import-secrets-wmb
       uses: hashicorp/vault-action@v3.0.0
@@ -92,6 +89,10 @@ jobs:
             kv/data/pipeline/wmb WMB_URL ;
             kv/data/pipeline/wmb WMB_PASSWORD
         exportEnv: true
+
+    - name: Check for Go vulnerabilities
+      run: |
+        go list -json -m all | docker run --rm -i sonatypecommunity/nancy:latest sleuth
     - name: Notify IRC Success
       run: |
         export COMMIT_MSG=$(git log -1 --pretty=%B)
@@ -122,6 +123,19 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Retrieve wmb info from vault
+      id: import-secrets-wmb
+      uses: hashicorp/vault-action@v3.0.0
+      with:
+        url: ${{ secrets.VAULT_ADDR }}
+        method: approle
+        roleId: ${{ secrets.VAULT_ROLE_ID }}
+        secretId: ${{ secrets.VAULT_SECRET_ID }}
+        secrets: |
+            kv/data/pipeline/wmb WMB_URL ;
+            kv/data/pipeline/wmb WMB_PASSWORD
+        exportEnv: true
+
     - name: Build and push :staging tag
       uses: docker/build-push-action@v6
       with:
@@ -140,19 +154,6 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: ghcr.io/${{ github.repository }}:latest
-        
-    - name: Retrieve wmb info from vault
-      id: import-secrets-wmb
-      uses: hashicorp/vault-action@v3.0.0
-      with:
-        url: ${{ secrets.VAULT_ADDR }}
-        method: approle
-        roleId: ${{ secrets.VAULT_ROLE_ID }}
-        secretId: ${{ secrets.VAULT_SECRET_ID }}
-        secrets: |
-          kv/data/pipeline/wmb WMB_URL ;
-          kv/data/pipeline/wmb WMB_PASSWORD
-        exportEnv: true
 
     - name: Notify IRC on Success
       run: |
@@ -173,6 +174,19 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref != 'refs/heads/main'
     steps:
+      - name: Retrieve wmb info from vault
+        id: import-secrets-wmb
+        uses: hashicorp/vault-action@v3.0.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+              kv/data/pipeline/wmb WMB_URL ;
+              kv/data/pipeline/wmb WMB_PASSWORD
+          exportEnv: true
+
       - name: Retrieve kubeconfig from Vault
         id: import-secrets
         uses: hashicorp/vault-action@v3.0.0
@@ -199,19 +213,6 @@ jobs:
         run: |
           kubectl -n production rollout restart deployment wmb
         if: github.ref == 'refs/heads/main'
-
-      - name: Retrieve wmb info from vault
-        id: import-secrets-wmb
-        uses: hashicorp/vault-action@v3.0.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            kv/data/pipeline/wmb WMB_URL ;
-            kv/data/pipeline/wmb WMB_PASSWORD
-          exportEnv: true
 
       - name: Notify IRC Success
         run: |
