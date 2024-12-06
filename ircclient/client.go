@@ -87,8 +87,8 @@ func Loop() {
 			}
 
 			if isPostConnect {
-				initializePostConnect()
 				log.Println("Connected to IRC server - doing post-connect routine")
+				initializePostConnect()
 				isPostConnect = false
 			}
 
