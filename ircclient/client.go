@@ -11,6 +11,9 @@ import (
 
 var IrcConnection net.Conn
 
+var doPostConnectRoutine = false
+var donePostConnectRoutine = false
+
 func Connect(server string) error {
 	conn, err := net.Dial("tcp", server)
 	if err != nil {
@@ -63,8 +66,6 @@ func Loop() {
 		readMessages(IrcConnection, messageChannel, errorChannel)
 	}()
 
-	isPostConnect := false
-
 	for {
 		select {
 		case message, ok := <-messageChannel:
@@ -79,17 +80,17 @@ func Loop() {
 			} else if len(words) >= 2 && words[1] == "PRIVMSG" {
 				processPrivmsg(words)
 			} else if len(words) >= 2 && words[1] == "001" {
-				isPostConnect = true
+				doPostConnectRoutine = true
 			} else if len(words) >= 2 && (words[1] == "376" || words[1] == "422") {
-				isPostConnect = true
+				doPostConnectRoutine = true
 			} else {
 				log.Println("Raw unprocessed message:", message)
 			}
 
-			if isPostConnect {
-				initializePostConnect()
+			if doPostConnectRoutine && !donePostConnectRoutine {
 				log.Println("Connected to IRC server - doing post-connect routine")
-				isPostConnect = false
+				initializePostConnect()
+				donePostConnectRoutine = true
 			}
 
 		case err := <-errorChannel:
