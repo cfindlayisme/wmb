@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	goutilsstrings "github.com/cfindlayisme/go-utils/strings"
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
 	"github.com/stretchr/testify/require"
@@ -13,13 +14,13 @@ func TestCleanMessage(t *testing.T) {
 	// Test case with newlines and carriage returns
 	input := "Hello\nWorld\r\n"
 	expected := "HelloWorld"
-	result := ircclient.CleanMessage(input)
+	result := goutilsstrings.StripNewlines(input)
 	require.Equal(t, expected, result, "The message should be cleaned")
 
 	// Test case with no newlines or carriage returns
 	input = "Hello World"
 	expected = "Hello World"
-	result = ircclient.CleanMessage(input)
+	result = goutilsstrings.StripNewlines(input)
 	require.Equal(t, expected, result, "The message should be unchanged")
 }
 

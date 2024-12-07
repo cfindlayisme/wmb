@@ -1,8 +1,6 @@
 package ircclient
 
 import (
-	"strings"
-
 	"github.com/cfindlayisme/wmb/model"
 )
 
@@ -73,12 +71,4 @@ func FormatMessage(msg model.IncomingMessage) string {
 	}
 
 	return ircMessage
-}
-
-func CleanMessage(message string) string {
-	// Strip newlines to prevent chaining of commands, ie, QUIT to the end
-	message = strings.ReplaceAll(message, "\n", "")
-	message = strings.ReplaceAll(message, "\r", "")
-
-	return message
 }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+
+	goutilsstrings "github.com/cfindlayisme/go-utils/strings"
 )
 
 func SetNick(conn net.Conn, nick string) error {
@@ -31,7 +33,7 @@ func SetMode(conn net.Conn, channel string, mode string) error {
 }
 
 func SetTopic(conn net.Conn, channel string, topic string) error {
-	cleanTopic := CleanMessage(topic)
+	cleanTopic := goutilsstrings.StripNewlines(topic)
 	_, err := fmt.Fprintf(conn, "TOPIC "+channel+" "+cleanTopic+"\r\n")
 	log.Println("TOPIC command sent for channel: ", channel, " with topic: ", cleanTopic)
 	return err
@@ -59,7 +61,7 @@ func Quote(conn net.Conn, command string) error {
 }
 
 func SendMessage(conn net.Conn, target string, message string) error {
-	ircMessage := CleanMessage(message)
+	ircMessage := goutilsstrings.StripNewlines(message)
 
 	_, err := fmt.Fprintf(conn, "PRIVMSG "+target+" :"+ircMessage+"\r\n")
 	log.Println("Sent message to ", target, ": ", ircMessage)
@@ -67,7 +69,7 @@ func SendMessage(conn net.Conn, target string, message string) error {
 }
 
 func SendNotice(conn net.Conn, target string, message string) error {
-	ircMessage := CleanMessage(message)
+	ircMessage := goutilsstrings.StripNewlines(message)
 
 	_, err := fmt.Fprintf(conn, "NOTICE "+target+" :"+ircMessage+"\r\n")
 	log.Println("Sent notice to ", target, ": ", ircMessage)
@@ -81,13 +83,13 @@ func SetUser(conn net.Conn) error {
 }
 
 func SendQuit(conn net.Conn, quitMessage string) error {
-	_, err := fmt.Fprintf(conn, "QUIT :%s\r\n", CleanMessage(quitMessage))
+	_, err := fmt.Fprintf(conn, "QUIT :%s\r\n", goutilsstrings.StripNewlines(quitMessage))
 	log.Println("Sent QUIT command")
 	return err
 }
 
 func SendCTCPReply(conn net.Conn, target, command, response string) error {
-	ctcpMessage := fmt.Sprintf("\x01%s %s\x01", command, CleanMessage(response))
+	ctcpMessage := fmt.Sprintf("\x01%s %s\x01", command, goutilsstrings.StripNewlines(response))
 	_, err := fmt.Fprintf(conn, "NOTICE %s :%s\r\n", target, ctcpMessage)
 	return err
 }
