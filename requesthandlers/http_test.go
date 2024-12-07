@@ -12,9 +12,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/cfindlayisme/go-utils/pointers"
 	"github.com/cfindlayisme/wmb/ircclient"
 	"github.com/cfindlayisme/wmb/model"
-	"github.com/cfindlayisme/wmb/pointers"
 	"github.com/cfindlayisme/wmb/router"
 	"github.com/stretchr/testify/assert"
 
