@@ -17,7 +17,7 @@ jobs:
         go-version: '1.21.3'
     - name: Retrieve wmb info from vault
       id: import-secrets-wmb
-      uses: hashicorp/vault-action@v3.0.0
+      uses: hashicorp/vault-action@v3.1.0
       with:
         url: ${{ secrets.VAULT_ADDR }}
         method: approle
@@ -79,7 +79,7 @@ jobs:
         go-version: 1.22.3
     - name: Retrieve wmb info from vault
       id: import-secrets-wmb
-      uses: hashicorp/vault-action@v3.0.0
+      uses: hashicorp/vault-action@v3.1.0
       with:
         url: ${{ secrets.VAULT_ADDR }}
         method: approle
@@ -125,7 +125,7 @@ jobs:
 
     - name: Retrieve wmb info from vault
       id: import-secrets-wmb
-      uses: hashicorp/vault-action@v3.0.0
+      uses: hashicorp/vault-action@v3.1.0
       with:
         url: ${{ secrets.VAULT_ADDR }}
         method: approle
@@ -176,7 +176,7 @@ jobs:
     steps:
       - name: Retrieve wmb info from vault
         id: import-secrets-wmb
-        uses: hashicorp/vault-action@v3.0.0
+        uses: hashicorp/vault-action@v3.1.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
           method: approle
@@ -189,7 +189,7 @@ jobs:
 
       - name: Retrieve kubeconfig from Vault
         id: import-secrets
-        uses: hashicorp/vault-action@v3.0.0
+        uses: hashicorp/vault-action@v3.1.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
           method: approle
