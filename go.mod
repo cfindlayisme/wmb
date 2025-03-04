@@ -2,7 +2,7 @@ module github.com/cfindlayisme/wmb
 
 go 1.23.0
 
-toolchain go1.23.5
+toolchain go1.24.0
 
 require (
 	bou.ke/monkey v1.0.2
