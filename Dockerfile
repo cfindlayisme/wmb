@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y ca-certificates
 # Enable CGO for sqllite dependency
 RUN CGO_ENABLED=1 GOOS=linux go build -o /application
 
-FROM debian:12.9-slim
+FROM debian:12.10-slim
 
 RUN apt-get update && apt-get install -y libc6 && \
     apt-get clean && \
