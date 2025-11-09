@@ -85,9 +85,9 @@ jobs:
           echo '${{ steps.import-secrets.outputs.kubeconfig }}' > $HOME/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
-      - name: Restart Staging Deployment
-        run: |
-          kubectl -n staging rollout restart deployment wmb
+      # - name: Restart Staging Deployment
+      #   run: |
+      #     kubectl -n staging rollout restart deployment wmb
 
       # Restart Deployment for Production (Only triggered if push to `main`)
       - name: Restart Production Deployment
