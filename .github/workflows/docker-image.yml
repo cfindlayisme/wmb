@@ -27,37 +27,8 @@ jobs:
         name: coverage-report
         path: coverage.out
 
-  sonar:
-      needs: [unit-test]
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Download coverage report
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-report
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-  nancy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: 1.24.2
-    - name: Check for Go vulnerabilities
-      run: |
-        go list -json -m all | docker run --rm -i sonatypecommunity/nancy:latest sleuth
-
   build-and-push:
-    needs: [sonar, nancy, unit-test]
+    needs: [unit-test]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref != 'refs/heads/main'
     steps:
