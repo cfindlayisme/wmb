@@ -3,19 +3,22 @@
 - [`/message`](#message)
   - [POST](#post)
     - [Request Body](#request-body)
+    - [Response](#response)
   - [GET](#get)
     - [URL Schema](#url-schema)
+    - [Response](#response-1)
 - [`/directedMessage`](#directedmessage)
   - [POST](#post-1)
     - [Request Body](#request-body-1)
+    - [Response](#response-2)
 - [`/subscribe/message`](#subscribemessage)
   - [POST](#post-2)
     - [Request Body](#request-body-2)
-    - [Response](#response)
+    - [Response](#response-3)
 - [`/unsubscribe/message`](#unsubscribemessage)
   - [POST](#post-3)
     - [Request Body](#request-body-3)
-    - [Response](#response-1)
+    - [Response](#response-4)
 
 
 # `/message`
@@ -45,6 +48,16 @@ Example:
     "Broadcast": true
 }
 ```
+
+### Response
+
+| Status Code | Description |
+|---|---|
+| `200 OK` | Message sent successfully |
+| `400 Bad Request` | Invalid JSON in request body, or message contains newline characters |
+| `401 Unauthorized` | Invalid password |
+| `500 Internal Server Error` | Failed to send message to IRC server |
+
 ## GET
 
 Sends a message.
@@ -62,6 +75,15 @@ Example:
 ```
 http://localhost:8080/message?Message=Hello,%20World!&Password=password&ColourCode=1&Broadcast=true
 ```
+
+### Response
+
+| Status Code | Description |
+|---|---|
+| `200 OK` | Message sent successfully |
+| `400 Bad Request` | Invalid query parameters, or message contains newline characters |
+| `401 Unauthorized` | Invalid password |
+| `500 Internal Server Error` | Failed to send message to IRC server |
 
 # `/directedMessage`
 
@@ -93,6 +115,15 @@ Example:
     }
 }
 ```
+
+### Response
+
+| Status Code | Description |
+|---|---|
+| `200 OK` | Message sent successfully |
+| `400 Bad Request` | Invalid JSON in request body, or message contains newline characters |
+| `401 Unauthorized` | Invalid password |
+| `500 Internal Server Error` | Failed to send message to IRC server |
 
 # `/subscribe/message`
 
@@ -148,10 +179,16 @@ Example:
 
 ### Response
 
+| Status Code | Description |
+|---|---|
+| `200 OK` | Subscription successful |
+| `400 Bad Request` | Invalid JSON in request body, or subscription failed |
+| `401 Unauthorized` | Invalid password |
+
 - `status` (string): Indicates success or failure.
 - `message` (string): A message providing additional details.
 
-Example Success Response:
+Example Success Response (`200 OK`):
 
 ```json
 {
@@ -160,7 +197,7 @@ Example Success Response:
 }
 ```
 
-Example Failure Response:
+Example Failure Response (`400 Bad Request`):
 
 ```json
 {
@@ -197,10 +234,16 @@ Example:
 
 ### Response
 
+| Status Code | Description |
+|---|---|
+| `200 OK` | Unsubscription successful |
+| `400 Bad Request` | Invalid JSON in request body, or unsubscription failed |
+| `401 Unauthorized` | Invalid password |
+
 - `status` (string): Indicates success or failure.
 - `message` (string): A message providing additional details.
 
-Example Success Response:
+Example Success Response (`200 OK`):
 ```json
 {
     "status": "success",
@@ -208,7 +251,7 @@ Example Success Response:
 }
 ```
 
-Example Failure Response:
+Example Failure Response (`400 Bad Request`):
 
 ```json
 {
