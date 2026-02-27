@@ -46,6 +46,8 @@ github.com/cfindlayisme/go-utils v0.0.42 h1:p3iMTqzRyXClpw/bUT1aTh/4n3A1xxVqy2CI
 github.com/cfindlayisme/go-utils v0.0.42/go.mod h1:oFFLbVTq59qrLqhYl+9u/T35Je6MI136eZZhzwHkDpI=
 github.com/cfindlayisme/go-utils v0.0.43 h1:wQKUfJP0zd76kK912uK5WaaJb5voDJ7jnZyaILr59Ac=
 github.com/cfindlayisme/go-utils v0.0.43/go.mod h1:oFFLbVTq59qrLqhYl+9u/T35Je6MI136eZZhzwHkDpI=
+github.com/cfindlayisme/go-utils v0.0.44 h1:A/3oXD5xYyN4pvYrfvBBGN5GE16KJ6VBOkR8UMmrBZ8=
+github.com/cfindlayisme/go-utils v0.0.44/go.mod h1:oFFLbVTq59qrLqhYl+9u/T35Je6MI136eZZhzwHkDpI=
 github.com/cloudwego/base64x v0.1.4 h1:jwCgWpFanWmN8xoIUHa2rtzmkd5J2plF/dnLS6Xd/0Y=
 github.com/cloudwego/base64x v0.1.4/go.mod h1:0zlkT4Wn5C6NdauXdJRhSKRlJvmclQ1hhJgA0rcu/8w=
 github.com/cloudwego/base64x v0.1.5 h1:XPciSp1xaq2VCSt6lF0phncD4koWyULpl5bUxbfCyP4=

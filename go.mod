@@ -7,7 +7,7 @@ toolchain go1.26.0
 require (
 	bou.ke/monkey v1.0.2
 	github.com/DATA-DOG/go-sqlmock v1.5.2
-	github.com/cfindlayisme/go-utils v0.0.43
+	github.com/cfindlayisme/go-utils v0.0.44
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-playground/assert/v2 v2.2.0
 	github.com/mattn/go-sqlite3 v1.14.34
