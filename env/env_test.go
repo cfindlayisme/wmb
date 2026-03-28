@@ -49,6 +49,22 @@ func TestGetNick(t *testing.T) {
 	assert.Equal(t, result, defaultResult)
 }
 
+func TestGetDebug(t *testing.T) {
+	os.Unsetenv("DEBUG")
+	assert.Equal(t, env.GetDebug(), false)
+
+	os.Setenv("DEBUG", "true")
+	assert.Equal(t, env.GetDebug(), true)
+
+	os.Setenv("DEBUG", "True")
+	assert.Equal(t, env.GetDebug(), true)
+
+	os.Setenv("DEBUG", "false")
+	assert.Equal(t, env.GetDebug(), false)
+
+	os.Unsetenv("DEBUG")
+}
+
 func TestGetDatabaseFile(t *testing.T) {
 	// Test default value
 	os.Unsetenv("DBFILE")

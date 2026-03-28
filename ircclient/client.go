@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/cfindlayisme/wmb/env"
+	"github.com/cfindlayisme/wmb/logging"
 )
 
 var IrcConnection net.Conn
@@ -84,7 +85,7 @@ func Loop() {
 			} else if len(words) >= 2 && (words[1] == "376" || words[1] == "422") {
 				doPostConnectRoutine = true
 			} else {
-				log.Println("Raw unprocessed message:", message)
+				logging.DebugLog("Raw unprocessed message:", message)
 			}
 
 			if doPostConnectRoutine && !donePostConnectRoutine {

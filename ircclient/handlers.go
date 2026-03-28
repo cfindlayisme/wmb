@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/cfindlayisme/wmb/logging"
 	"github.com/cfindlayisme/wmb/model"
 	"github.com/cfindlayisme/wmb/webhook"
 )
@@ -13,7 +14,7 @@ import (
 func ReturnPong(connection net.Conn, message string) {
 	pongMessage := strings.Replace(message, "PING", "PONG", 1)
 	fmt.Fprintf(connection, pongMessage+"\r\n")
-	log.Println("PONG returned to server PING")
+	logging.DebugLog("PONG returned to server PING")
 }
 
 func processPrivmsg(words []string) {

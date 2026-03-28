@@ -15,6 +15,7 @@ This document covers advanced configuration details for wmb beyond the basics ne
 | `PORT` | No | Port for the webserver to listen on (defaults to `8080`) |
 | `SELF_MODE` | No | User mode to set on self once joined to the IRC server (defaults to nothing, but should be `+B` on some servers) |
 | `DBFILE` | No | File path for the database (defaults to `wmb.db` - be sure to map properly if inside Docker) |
+| `DEBUG` | No | Set to `true` to enable verbose debug logging (raw IRC messages, command sends, webhook details). Defaults to off. |
 
 ## Docker Compose
 

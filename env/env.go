@@ -61,3 +61,7 @@ func GetSelfMode() string {
 	mode := os.Getenv("SELF_MODE")
 	return mode
 }
+
+func GetDebug() bool {
+	return strings.EqualFold(os.Getenv("DEBUG"), "true")
+}

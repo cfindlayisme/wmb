@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/cfindlayisme/wmb/database"
+	"github.com/cfindlayisme/wmb/logging"
 	"github.com/cfindlayisme/wmb/model"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -46,7 +47,7 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 	}
 
 	// Print the number of rows returned by the query
-	log.Println("Number of rows returned by the query:", len(urls))
+	logging.DebugLog("Number of rows returned by the query:", len(urls))
 
 	// Close the rows before sending the webhooks
 	rows.Close()
@@ -72,7 +73,7 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 	}
 
 	// Print the number of webhooks sent
-	log.Println("Number of webhooks sent:", len(urls))
+	logging.DebugLog("Number of webhooks sent:", len(urls))
 
 	// Check for errors from iterating over rows.
 	if err := rows.Err(); err != nil {
@@ -112,8 +113,8 @@ func sendPrivmsgWebhookToUrl(url string, msg model.DirectedOutgoingMessage) erro
 	// Set the content type to JSON
 	req.Header.Set("Content-Type", "application/json")
 
-	log.Println("Sending message to", url)
-	log.Println(msg)
+	logging.DebugLog("Sending message to", url)
+	logging.DebugLog(msg)
 
 	// Send the request
 	client := &http.Client{
