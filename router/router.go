@@ -7,7 +7,9 @@ import (
 )
 
 func SetupRouter() *gin.Engine {
-	if !env.GetDebug() {
+	if env.GetDebug() {
+		gin.SetMode(gin.DebugMode)
+	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
