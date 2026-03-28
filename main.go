@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -9,6 +8,7 @@ import (
 	"github.com/cfindlayisme/wmb/database"
 	"github.com/cfindlayisme/wmb/env"
 	"github.com/cfindlayisme/wmb/ircclient"
+	"github.com/cfindlayisme/wmb/logging"
 	"github.com/cfindlayisme/wmb/router"
 )
 
@@ -18,7 +18,7 @@ func main() {
 
 	err := ircclient.Connect(env.GetServer())
 	if err != nil {
-		log.Fatalf("Failed to connect to IRC server: %s", err)
+		logging.Fatalf("Failed to connect to IRC server: %s", err)
 	}
 
 	router := router.SetupRouter()
@@ -29,7 +29,7 @@ func main() {
 		err := router.Run(listenAddress)
 
 		if err != nil {
-			log.Fatalf("Failed to start webserver: %s", err)
+			logging.Fatalf("Failed to start webserver: %s", err)
 		}
 	}()
 

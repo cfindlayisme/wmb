@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -20,14 +19,14 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 	// Prepare the query
 	stmt, err := db.Prepare("SELECT URL, FailureCount FROM PrivmsgSubscriptions WHERE Target = ?")
 	if err != nil {
-		log.Fatalf("Error preparing the query: %v", err)
+		logging.Fatalf("Error preparing the query: %v", err)
 	}
 	defer stmt.Close()
 
 	// Execute the query
 	rows, err := stmt.Query(target)
 	if err != nil {
-		log.Fatalf("Error executing the query: %v", err)
+		logging.Fatalf("Error executing the query: %v", err)
 	}
 
 	// Create a slice to hold the URLs and failure counts
@@ -39,7 +38,7 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 		var url string
 		var failureCount int
 		if err := rows.Scan(&url, &failureCount); err != nil {
-			log.Fatalf("Error scanning the row: %v", err)
+			logging.Fatalf("Error scanning the row: %v", err)
 		}
 
 		urls = append(urls, url)
@@ -47,7 +46,7 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 	}
 
 	// Print the number of rows returned by the query
-	logging.DebugLog("Number of rows returned by the query:", len(urls))
+	logging.Debug("Number of rows returned by the query:", len(urls))
 
 	// Close the rows before sending the webhooks
 	rows.Close()
@@ -63,21 +62,21 @@ func SendPrivmsgWebhook(target string, message string, ircuser model.IrcUser) {
 
 		err := sendPrivmsgWebhookToUrl(url, msg)
 		if err != nil {
-			log.Println("Failed to send to the target URL:", url)
+			logging.Warnf("Failed to send to target URL %s: %v", url, err)
 			updateFailureCount(target, url)
 			failureCounts[i]++
 			if failureCounts[i] >= 3 {
-				log.Println("Failed to send to the target URL:", url)
+				logging.Errorf("Target URL %s has failed %d times", url, failureCounts[i])
 			}
 		}
 	}
 
 	// Print the number of webhooks sent
-	logging.DebugLog("Number of webhooks sent:", len(urls))
+	logging.Debug("Number of webhooks sent:", len(urls))
 
 	// Check for errors from iterating over rows.
 	if err := rows.Err(); err != nil {
-		log.Fatalf("Error iterating rows: %v", err)
+		logging.Fatalf("Error iterating rows: %v", err)
 	}
 }
 
@@ -87,13 +86,13 @@ func updateFailureCount(target string, url string) {
 	// Prepare the update statement for failure
 	updateFailureStmt, err := db.Prepare("UPDATE PrivmsgSubscriptions SET FailureCount = FailureCount + 1 WHERE Target = ? AND URL = ?")
 	if err != nil {
-		log.Fatalf("Error preparing the update statement: %v", err)
+		logging.Fatalf("Error preparing the update statement: %v", err)
 	}
 	defer updateFailureStmt.Close()
 
 	_, err = updateFailureStmt.Exec(target, url)
 	if err != nil {
-		log.Fatalf("Error updating the failure count: %v", err)
+		logging.Fatalf("Error updating the failure count: %v", err)
 	}
 }
 
@@ -113,8 +112,8 @@ func sendPrivmsgWebhookToUrl(url string, msg model.DirectedOutgoingMessage) erro
 	// Set the content type to JSON
 	req.Header.Set("Content-Type", "application/json")
 
-	logging.DebugLog("Sending message to", url)
-	logging.DebugLog(msg)
+	logging.Debug("Sending message to", url)
+	logging.Debug(msg)
 
 	// Send the request
 	client := &http.Client{

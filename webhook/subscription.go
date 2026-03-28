@@ -2,9 +2,9 @@ package webhook
 
 import (
 	"database/sql"
-	"log"
 
 	"github.com/cfindlayisme/wmb/database"
+	"github.com/cfindlayisme/wmb/logging"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -14,7 +14,7 @@ func SubscribePrivmsg(target string, url string) bool {
 	// Begin a transaction
 	tx, err := db.Begin()
 	if err != nil {
-		log.Printf("Error beginning transaction: %v", err)
+		logging.Errorf("Error beginning transaction: %v", err)
 		return false
 	}
 	defer tx.Rollback() // Rollback the transaction if it's not committed
@@ -24,7 +24,7 @@ func SubscribePrivmsg(target string, url string) bool {
 	var exists bool
 	err = row.Scan(&exists)
 	if err != nil && err != sql.ErrNoRows {
-		log.Printf("Error checking existence: %v", err)
+		logging.Errorf("Error checking existence: %v", err)
 		return false
 	}
 	if exists {
@@ -34,7 +34,7 @@ func SubscribePrivmsg(target string, url string) bool {
 	// Prepare the statement
 	stmt, err := tx.Prepare("INSERT OR IGNORE INTO PrivmsgSubscriptions (Target, URL, FailureCount) VALUES (?, ?, 0)")
 	if err != nil {
-		log.Printf("Error preparing statement: %v", err)
+		logging.Errorf("Error preparing statement: %v", err)
 		return false
 	}
 	defer stmt.Close() // Close the statement when it's no longer needed
@@ -42,14 +42,14 @@ func SubscribePrivmsg(target string, url string) bool {
 	// Execute the statement
 	_, err = stmt.Exec(target, url)
 	if err != nil {
-		log.Printf("Error executing statement: %v", err)
+		logging.Errorf("Error executing statement: %v", err)
 		return false
 	}
 
 	// Commit the transaction
 	err = tx.Commit()
 	if err != nil {
-		log.Printf("Error committing transaction: %v", err)
+		logging.Errorf("Error committing transaction: %v", err)
 		return false
 	}
 
@@ -62,7 +62,7 @@ func UnsubscribePrivmsg(target string, url string) bool {
 	// Begin a transaction
 	tx, err := db.Begin()
 	if err != nil {
-		log.Printf("Error beginning transaction: %v", err)
+		logging.Errorf("Error beginning transaction: %v", err)
 		return false
 	}
 	defer tx.Rollback() // Rollback the transaction if it's not committed
@@ -72,7 +72,7 @@ func UnsubscribePrivmsg(target string, url string) bool {
 	var exists bool
 	err = row.Scan(&exists)
 	if err != nil && err != sql.ErrNoRows {
-		log.Printf("Error checking existence: %v", err)
+		logging.Errorf("Error checking existence: %v", err)
 		return false
 	}
 	if !exists {
@@ -82,7 +82,7 @@ func UnsubscribePrivmsg(target string, url string) bool {
 	// Prepare the statement
 	stmt, err := tx.Prepare("DELETE FROM PrivmsgSubscriptions WHERE Target = ? AND URL = ?")
 	if err != nil {
-		log.Printf("Error preparing statement: %v", err)
+		logging.Errorf("Error preparing statement: %v", err)
 		return false
 	}
 	defer stmt.Close() // Close the statement when it's no longer needed
@@ -90,14 +90,14 @@ func UnsubscribePrivmsg(target string, url string) bool {
 	// Execute the statement
 	_, err = stmt.Exec(target, url)
 	if err != nil {
-		log.Printf("Error executing statement: %v", err)
+		logging.Errorf("Error executing statement: %v", err)
 		return false
 	}
 
 	// Commit the transaction
 	err = tx.Commit()
 	if err != nil {
-		log.Printf("Error committing transaction: %v", err)
+		logging.Errorf("Error committing transaction: %v", err)
 		return false
 	}
 

@@ -2,7 +2,6 @@ package ircclient
 
 import (
 	"bufio"
-	"log"
 	"net"
 	"strings"
 
@@ -85,17 +84,17 @@ func Loop() {
 			} else if len(words) >= 2 && (words[1] == "376" || words[1] == "422") {
 				doPostConnectRoutine = true
 			} else {
-				logging.DebugLog("Raw unprocessed message:", message)
+				logging.Debug("Raw unprocessed message:", message)
 			}
 
 			if doPostConnectRoutine && !donePostConnectRoutine {
-				log.Println("Connected to IRC server - doing post-connect routine")
+				logging.Info("Connected to IRC server - doing post-connect routine")
 				initializePostConnect()
 				donePostConnectRoutine = true
 			}
 
 		case err := <-errorChannel:
-			log.Println("Error reading from connection:", err)
+			logging.Error("Error reading from connection:", err)
 			return
 		}
 	}

@@ -2,7 +2,6 @@ package ircclient
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strings"
 
@@ -14,14 +13,14 @@ import (
 func ReturnPong(connection net.Conn, message string) {
 	pongMessage := strings.Replace(message, "PING", "PONG", 1)
 	fmt.Fprintf(connection, pongMessage+"\r\n")
-	logging.DebugLog("PONG returned to server PING")
+	logging.Debug("PONG returned to server PING")
 }
 
 func processPrivmsg(words []string) {
 	// Extract the channel and the message from the PRIVMSG command
 	// The format of a PRIVMSG command is: :nick!user@host PRIVMSG #channel :message
 	if len(words) < 4 {
-		log.Println("Invalid PRIVMSG command:", strings.Join(words, " "))
+		logging.Warn("Invalid PRIVMSG command:", strings.Join(words, " "))
 		return
 	}
 
@@ -30,7 +29,7 @@ func processPrivmsg(words []string) {
 	prefix := strings.TrimPrefix(words[0], ":")
 	prefixParts := strings.SplitN(prefix, "!", 2)
 	if len(prefixParts) < 2 {
-		log.Println("Invalid prefix in PRIVMSG command:", prefix)
+		logging.Warn("Invalid prefix in PRIVMSG command:", prefix)
 		return
 	}
 
@@ -38,7 +37,7 @@ func processPrivmsg(words []string) {
 
 	userHostParts := strings.SplitN(prefixParts[1], "@", 2)
 	if len(userHostParts) < 2 {
-		log.Println("Invalid user@host in PRIVMSG command:", prefixParts[1])
+		logging.Warn("Invalid user@host in PRIVMSG command:", prefixParts[1])
 		return
 	}
 
@@ -56,7 +55,7 @@ func processPrivmsg(words []string) {
 		return
 	}
 
-	log.Printf("Received PRIVMSG from %s!%s@%s to %s: %s\n", nick, user, host, channel, msg)
+	logging.Infof("Received PRIVMSG from %s!%s@%s to %s: %s", nick, user, host, channel, msg)
 
 	ircuser := model.IrcUser{
 		Nick: nick,
@@ -75,10 +74,10 @@ func processCTCP(nick, user, host, msg string) {
 	switch command {
 
 	case "VERSION":
-		log.Printf("Received CTCP VERSION request from %s!%s@%s\n", nick, user, host)
+		logging.Infof("Received CTCP VERSION request from %s!%s@%s", nick, user, host)
 		SendCTCPReply(IrcConnection, nick, "VERSION", "wmb - github.com/cfindlayisme/wmb")
 	default:
-		log.Printf("Unknown CTCP command '%s' from %s!%s@%s\n", command, nick, user, host)
+		logging.Warnf("Unknown CTCP command '%s' from %s!%s@%s", command, nick, user, host)
 
 	}
 }
