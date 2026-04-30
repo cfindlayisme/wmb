@@ -12,7 +12,7 @@ import (
 
 func ReturnPong(connection net.Conn, message string) {
 	pongMessage := strings.Replace(message, "PING", "PONG", 1)
-	fmt.Fprintf(connection, pongMessage+"\r\n")
+	fmt.Fprintf(connection, "%s\r\n", pongMessage)
 	log.Println("PONG returned to server PING")
 }
 
