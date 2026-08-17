@@ -10,7 +10,7 @@ require (
 	github.com/cfindlayisme/go-utils v0.0.51
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-playground/assert/v2 v2.2.0
-	github.com/mattn/go-sqlite3 v1.14.49
+	github.com/mattn/go-sqlite3 v1.14.50
 	github.com/stretchr/testify v1.11.1
 )
 
